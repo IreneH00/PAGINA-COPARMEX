@@ -849,7 +849,7 @@ $(document).ready(function () {
 document.getElementById('socioSelect').addEventListener('change', function() {
     const socioId = this.value;
 
-    fetch('totales.php', {
+    fetch('gestionPrecios.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -871,6 +871,7 @@ document.getElementById('socioSelect').addEventListener('change', function() {
     })
     .catch(error => console.error('Error:', error));
 });
+
 
 
 
