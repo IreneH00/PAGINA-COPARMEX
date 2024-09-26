@@ -1,0 +1,113 @@
+html, body {
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+.description {
+    text-align: center;
+    padding-bottom: 40px;
+}
+.jsCalendar.clean-theme tbody td.jsCalendar-previous, .jsCalendar.clean-theme tbody td.jsCalendar-next {
+    color: #000;
+    opacity: 0.2;
+}
+.calendario{
+    width: 100%;
+    height: 100%;
+    padding: 5.4%;
+}
+#wrapper {
+    margin: 50px auto;
+    width: 800px;
+}
+#wrapper .jsCalendar table {
+    background-color: rgba(63, 134, 193, 0.874);
+    box-shadow: none;
+}
+.clear {
+    clear: both;
+}
+#events-calendar {
+    float: left;
+}
+#events {
+    border: 2px solid black;
+    background-color:  rgb(255, 255, 255);
+    float: left;
+    width: 435px;
+    margin: 10px 20px 10px 5px;
+}
+#events .title {
+    padding: 5px 0px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+#events .subtitle {
+    padding: 5px 0px;
+    font-size: 14px;
+    text-align: center;
+    color: #888;
+}
+#events .list {
+    background-color: rgb(255, 255, 255);
+    height: 250px;
+    overflow-y: auto;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.711);
+}
+
+#events .list .event-item {
+    line-height: 24px;
+    min-height: 24px;
+    padding: 2px 5px;
+    border-top: 1px solid rgb(0, 0, 0);
+}
+#events .list .event-item:hover{
+    background-color: #625e5ecc;
+    cursor: context-menu;
+}
+
+#events .list .event-item .close {
+    font-family: Tahoma, Geneva, sans-serif;
+    font-size: 100%;
+    color: #000;
+    border-radius: 8px;
+    height: 16px;
+    width: 16px;
+    line-height: 14px;
+    text-align: center;
+    float: right;
+    border: 1px solid rgb(0, 0, 0);
+    padding: 0px;
+    margin: 5px;
+    display: block;
+    overflow: hidden;
+    background: #ff0101;
+    cursor: pointer;
+}
+#events .action {
+    text-align: right;
+}
+#events .action input {
+    padding: 0px 5px;
+    font-size: 14px;
+    margin: 10px 5px;
+    border: 1px solid #000000;
+    height: 28px;
+    line-height: 20px;
+    width: 120px;
+    background: #3cf603;
+    color: black;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+#events .action input:hover {
+    background: #0273fd;
+    border: 1px solid #000;
+    box-shadow: 2px 5px rgba(2, 2, 2, 0.986);
+}
+.version {
+    font-size: 12px;
+    width: 800px;
+    margin: 0 auto;
+    text-align: right;
+}

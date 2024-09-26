@@ -1,0 +1,24 @@
+{
+    "editor.minimap.autohide": false,
+    "editor.minimap.enabled": true,
+    "window.autoDetectColorScheme": false,
+    "window.commandCenter": false,
+    "editor.fontFamily": "Consolas, 'Arial', monospace",
+    "cSpell.words": [
+        "activo",
+        "categoria",
+        "comentario",
+        "evento",
+        "fecha",
+        "nombre",
+        "ponente",
+        "sssssssssssi",
+        "tipo"
+    ],
+    "cSpell.languageSettings": [
+        
+    ],
+    "cSpell.enableFiletypes": [
+        "php"
+    ]
+}

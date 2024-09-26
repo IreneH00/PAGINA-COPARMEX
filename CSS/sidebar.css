@@ -1,0 +1,212 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+body {
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+}
+.gradient-custom {
+  /* fallback for old browsers */
+  background: #6a11cb;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(106, 17, 203, 1),
+    rgba(37, 117, 252, 1)
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(
+    to right,
+    rgb(17, 45, 203),
+    rgba(37, 117, 252, 1)
+  );
+}
+
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgb(17, 45, 203);
+  overflow-x: hidden;
+  padding-top: 20px;
+  cursor: grabbing;
+}
+
+.sidenav :hover {
+  background-color: rgb(118, 187, 234);
+  transition: all 0.1s ease;
+}
+
+.main {
+  color: rgb(0, 0, 0);
+  margin-left: 200px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+.sidenav a {
+  padding: 6px 6px 6px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #050505;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .gradient-form {
+    height: 100vh !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .gradient-custom-2 {
+    border-top-right-radius: 0.3rem;
+    border-bottom-right-radius: 0.3rem;
+  }
+}
+
+.logo {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  transition: all 0.5s ease;
+  margin: 10px 0 0 -1px;
+}
+
+.logo img {
+  width: 85px;
+  height: 65px;
+  border-radius: 50%;
+}
+
+.logo span {
+  font-weight: bold;
+  padding-left: 15px;
+  font-size: 18px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.sidenav select {
+  width: 160px;
+  padding: 6px 6px 6px 32px;
+  font-size: 20px;
+  color: #050505;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.sidenav select option {
+  padding: 100%;
+  color: #000;
+  background-color: rgb(rgba(11, 67, 237, 0.608));
+}
+
+.salir {
+  color: none;
+  display: inline-block;
+  padding: 10px 20%;
+  font-size: 50px;
+}
+
+.dropdown-menu {
+  position: relative;
+  background-color: rgba(120, 115, 115, 0.299);
+  border: none;
+}
+
+.dropdown-menu li {
+  padding: 10px;
+}
+
+.dropdown-menu li:hover {
+  background-color: rgb(101, 129, 148);
+  transition: all 0.1s ease;
+}
+.bottom1 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0%;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  padding-top: 10px;
+  box-sizing: border-box;
+}
+
+#contenido {
+  width: 100%;
+  margin-left: 30vh;
+  padding: 1%;
+  margin-bottom: -20px;
+}
+
+.grafica {
+  margin-bottom: 30px;
+  width: 4%;
+}
+
+.form-container {
+  width: 50%;
+}
+#registrarBtn {
+  padding: -100%;
+  width: 100px;
+  margin-top: 12px;
+  margin-inline: 2vh;
+}
+#pagarBtn {
+  padding: -100%;
+  width: 100px;
+  margin-top: 12px;
+  margin-inline: 4vh;
+}
+
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-select-items {
+  position: absolute;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  border-top: none;
+  z-index: 99;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+}
+
+.custom-select-items div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.custom-select-items div:hover {
+  background-color: #ddd;
+}
