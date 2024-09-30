@@ -11,7 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="icon" type="image/png" href="images/logo.jpeg">
-  <link rel="stylesheet" href="path/to/bootstrap.css">
+ 
 
   <title>Cobranza</title>
 
@@ -398,7 +398,7 @@ while ($fila2 = $resultado2->fetch_assoc()) {
 
         
         <div id="estadoCuentaForm" class="hidden">
-          <input type="email" class="comment-box" placeholder="name@example.com" style="width: 200%;">
+          <input type="email" id= "email"class="comment-box" placeholder="name@example.com" style="width: 200%;" required>
           <button class="btn btn-custom"  id= "enviarestado" style="width: 200%; margin-top: 10px;">Enviar estado de cuenta</button>
         </div>
       </div>
@@ -535,10 +535,101 @@ while ($fila2 = $resultado2->fetch_assoc()) {
 
 
 //ENVIAR CORREO CON ESTADO DE CUENTA
+$(document).ready(function () {
+  $('#enviarestado').click(function (event) {
+    event.preventDefault();
+
+    var correo = $('#email').val().trim(); 
+
+    if (correo) {
+     
+     const { jsPDF } = window.jspdf;
+     const doc = new jsPDF();
+
+    
+     doc.setFontSize(22);
+     doc.setTextColor(40, 60, 90);
+     const title = 'ESTADO DE CUENTA'; 
+     const titleWidth = doc.getTextWidth(title);
+     const xTitle = (doc.internal.pageSize.getWidth() - titleWidth) / 2; 
+     doc.text(title, xTitle, 20);
+
+     doc.setFontSize(12);
+     doc.setTextColor(100, 100, 100);
+     const date = 'Fecha: ' + new Date().toLocaleDateString();
+     const dateWidth = doc.getTextWidth(date);
+     const xDate = (doc.internal.pageSize.getWidth() - dateWidth) / 2; 
+     doc.text(date, xDate, 30);
+
+     var headers = [['ID', 'Nombre del Evento', 'Nombre', 'Teléfono', 'Correo', 'Activo', 'Pagado']];
+     var rows = [];
+
+     
+     $('table tbody tr').each(function () {
+       var pagado = $(this).find('td').eq(6).text(); 
+       if (pagado.toLowerCase() === 'no') { 
+         var row = [
+           $(this).find('td').eq(0).text(),
+           $(this).find('td').eq(1).text(),
+           $(this).find('td').eq(2).text(),
+           $(this).find('td').eq(3).text(),
+           $(this).find('td').eq(4).text(),
+           $(this).find('td').eq(5).text(),
+           $(this).find('td').eq(6).text(),
+         ];
+         rows.push(row);
+       }
+     });
+
+     
+     if (rows.length === 0) {
+       alert("No hay registros donde el socio deba.");
+       return;
+     }
+
+     doc.autoTable({
+       head: headers,
+       body: rows,
+       startY: 40,
+       headStyles: {
+         fillColor: [0, 102, 204],
+         textColor: [255, 255, 255],
+         fontSize: 12,
+         fontStyle: 'bold'
+       },
+       bodyStyles: {
+         fontSize: 10,
+         textColor: [0, 0, 0]
+       },
+       alternateRowStyles: {
+         fillColor: [240, 240, 240]
+       },
+       margin: { top: 40 },
+     });
+
+     const pdfFileName = 'Estado de cuenta.pdf';
+      doc.save(pdfFileName);
+
+      
+      var subject = encodeURIComponent("ESTADO DE CUENTA");
+      var body = encodeURIComponent("Adjunta el PDF generado antes de enviar el correo.");
+      var mailtoLink = `mailto:${correo}?subject=${subject}&body=${body}`;
+
+     
+      alert('El PDF ha sido generado. Se abrirá el mail para que puedas adjuntar al correo.');
+      window.location.href = mailtoLink;
+
+    } else {
+      alert("Por favor, ingresa un correo electrónico.");
+    }
+  });
+});
+
 
 
 
 //EDITAR REGISTROS DE SOCIOS A EVENTOS 
+
 function editarRegistro(id) {
     $.ajax({
         url: 'obtenerDatosSocios.php',
@@ -566,7 +657,7 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialPagos">
-                                        <!-- Populate with payment history data -->
+                                        <!-- Aquí puedes cargar los pagos existentes si es necesario -->
                                     </tbody>
                                 </table>
                             </div>
@@ -585,7 +676,7 @@ function editarRegistro(id) {
                                     </thead>
                                     <tbody id="abonoSection">
                                         <tr>
-                                            <td>${data.cuota || ''}</td> <!-- Este es el valor que quieres mostrar -->
+                                            <td>${data.cuota || ''}</td> 
                                             <td><input type="number" id="porCobrar" class="form-control"></td>
                                             <td><input type="number" id="monto" class="form-control"></td>
                                             <td><input type="text" id="formaPago" class="form-control"></td>
@@ -594,8 +685,8 @@ function editarRegistro(id) {
                                     </tbody>
                                 </table>
                             </div>
-                            <button class="btn btn-primary w-100 mt-3" onclick="guardarAbono(${id})">
-                                <i class="fa-solid fa-save"></i> Guardar 
+                            <button class="btn btn-primary w-100 mt-3" id="btnGuardarAbono">
+                                <i class="fa-solid fa-save"></i> Guardar Abono
                             </button>
 
                             <h5 style="font-weight: bold; margin-top: 30px; margin-bottom: 15px;">Condonación</h5>
@@ -612,7 +703,7 @@ function editarRegistro(id) {
                                     </thead>
                                     <tbody id="condonacionSection">
                                         <tr>
-                                            <td>${data.cuota || ''}</td> <!-- También aquí para Condonación -->
+                                            <td>${data.cuota || ''}</td> 
                                             <td><input type="number" id="porCondonar" class="form-control"></td>
                                             <td><input type="date" id="fechaCondonacion" class="form-control"></td>
                                             <td><input type="text" id="tipoCondonacion" class="form-control"></td>
@@ -621,14 +712,14 @@ function editarRegistro(id) {
                                     </tbody>
                                 </table>
                             </div>
-                            <button class="btn btn-primary w-100 mt-3" onclick="guardarCondonacion(${id})">
-                                <i class="fa-solid fa-save"></i> Guardar 
+                            <button class="btn btn-primary w-100 mt-3" id="btnGuardarCondonacion">
+                                <i class="fa-solid fa-save"></i> Guardar Condonación
                             </button>
 
                             <h5 style="font-weight: bold; margin-top: 30px; margin-bottom: 15px;">Comentario Dirección</h5>
                             <input type="text" id="comentarioDireccion" class="form-control mb-3" placeholder="Agregar comentario">
-                            <button class="btn btn-primary w-100 mt-2" onclick="guardarComentario(${id})">
-                                <i class="fa-solid fa-save"></i> Guardar 
+                            <button class="btn btn-primary w-100 mt-2" id="btnGuardarComentario">
+                                <i class="fa-solid fa-save"></i> Guardar Comentario
                             </button>
 
                             <h5 style="font-weight: bold; margin-top: 30px; margin-bottom: 15px;">Historial de Comentarios Dirección</h5>
@@ -642,7 +733,7 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialComentarios">
-                                        <!-- Populate with comments history -->
+                                        <!-- Aquí puedes cargar los comentarios existentes si es necesario -->
                                     </tbody>
                                 </table>
                             </div>
@@ -655,7 +746,130 @@ function editarRegistro(id) {
                         popup: 'swal2-popup-custom',
                     },
                     width: '800px', 
+                    didRender: () => {
+                       
+
+                        
+                        $('#btnGuardarAbono').on('click', function() {
+                            guardarAbono(id);
+                        });
+
+                        
+                        $('#btnGuardarCondonacion').on('click', function() {
+                            guardarCondonacion(id);
+                        });
+
+                        $('#btnGuardarComentario').on('click', function() {
+                            guardarComentario(id);
+                        });
+                    }
                 });
+
+              
+                function guardarAbono(id) {
+                    const porCobrar = $('#porCobrar').val();
+                    const monto = $('#monto').val();
+                    const formaPago = $('#formaPago').val();
+                    const fechaPago = $('#fechaPago').val();
+
+                    if (!porCobrar || !monto || !formaPago || !fechaPago) {
+                        Swal.fire('Error', 'Por favor, completa todos los campos de Abono.', 'warning');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'guardarAbono.php',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            porCobrar: porCobrar,
+                            monto: monto,
+                            formaPago: formaPago,
+                            fechaPago: fechaPago
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response);
+                            if (res.success) {
+                                Swal.fire('Éxito', 'Abono guardado correctamente.', 'success');
+                               
+                            } else {
+                                Swal.fire('Error', res.message || 'No se pudo guardar el abono.', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+                        }
+                    });
+                }
+
+                function guardarCondonacion(id) {
+                    const porCondonar = $('#porCondonar').val();
+                    const fechaCondonacion = $('#fechaCondonacion').val();
+                    const tipoCondonacion = $('#tipoCondonacion').val();
+                    const montoCondonacion = $('#montoCondonacion').val();
+
+                    if (!porCondonar || !fechaCondonacion || !tipoCondonacion || !montoCondonacion) {
+                        Swal.fire('Error', 'Por favor, completa todos los campos de Condonación.', 'warning');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'guardarCondonacion.php',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            porCondonar: porCondonar,
+                            fechaCondonacion: fechaCondonacion,
+                            tipoCondonacion: tipoCondonacion,
+                            montoCondonacion: montoCondonacion
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response);
+                            if (res.success) {
+                                Swal.fire('Éxito', 'Condonación guardada correctamente.', 'success');
+                                
+                            } else {
+                                Swal.fire('Error', res.message || 'No se pudo guardar la condonación.', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+                        }
+                    });
+                }
+
+                function guardarComentario(id) {
+                    const comentarioDireccion = $('#comentarioDireccion').val().trim();
+
+                    if (!comentarioDireccion) {
+                        Swal.fire('Error', 'Por favor, ingresa un comentario.', 'warning');
+                        return;
+                    }
+                    console.log('Llamando a guardarComentario.php');
+                    console.log({ id: id, comentarioDireccion: comentarioDireccion });
+                    $.ajax({
+                      
+                        url: 'guardarComentario.php',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            comentarioDireccion: comentarioDireccion
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response);
+                            if (res.success) {
+                                Swal.fire('Éxito', 'Comentario guardado correctamente.', 'success');
+                                
+                                $('#comentarioDireccion').val(''); 
+                            } else {
+                                Swal.fire('Error', res.message || 'No se pudo guardar el comentario.', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+                        }
+                    });
+                }
 
             } catch (error) {
                 console.error('Error al parsear la respuesta:', error);
@@ -666,12 +880,17 @@ function editarRegistro(id) {
             console.error('Error:', textStatus, errorThrown);
             Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
         }
+        
     });
 }
 
 
+
+
+
+
     //EDITAR SOCIO
-function editarSocio(id) {
+    function editarSocio(id) {
     $.ajax({
         url: 'obtenerDatosSocios.php',
         type: 'POST',
@@ -681,7 +900,7 @@ function editarSocio(id) {
                 const data = JSON.parse(response);
 
                 Swal.fire({
-                    title: 'Editar Socio',
+                    title: 'Editar Registro de socios a eventos',
                     html: `
                         <div style="max-width: 800px; overflow-y: auto; font-size: 14px; padding: 20px;">
                             <h5 style="font-weight: bold; margin-bottom: 15px;">Historial de Pagos</h5>
@@ -698,7 +917,7 @@ function editarSocio(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialPagos">
-                                        <!-- Populate with payment history data -->
+                                        <!-- Aquí puedes cargar los pagos existentes si es necesario -->
                                     </tbody>
                                 </table>
                             </div>
@@ -717,7 +936,7 @@ function editarSocio(id) {
                                     </thead>
                                     <tbody id="abonoSection">
                                         <tr>
-                                            <td>${data.cuota || ''}</td> <!-- Este es el valor que quieres mostrar -->
+                                            <td>${data.cuota || ''}</td> 
                                             <td><input type="number" id="porCobrar" class="form-control"></td>
                                             <td><input type="number" id="monto" class="form-control"></td>
                                             <td><input type="text" id="formaPago" class="form-control"></td>
@@ -726,8 +945,8 @@ function editarSocio(id) {
                                     </tbody>
                                 </table>
                             </div>
-                            <button class="btn btn-primary w-100 mt-3" onclick="guardarAbono(${id})">
-                                <i class="fa-solid fa-save"></i> Guardar 
+                            <button class="btn btn-primary w-100 mt-3" id="btnGuardarAbono">
+                                <i class="fa-solid fa-save"></i> Guardar Abono
                             </button>
 
                             <h5 style="font-weight: bold; margin-top: 30px; margin-bottom: 15px;">Condonación</h5>
@@ -744,7 +963,7 @@ function editarSocio(id) {
                                     </thead>
                                     <tbody id="condonacionSection">
                                         <tr>
-                                            <td>${data.cuota || ''}</td> <!-- También aquí para Condonación -->
+                                            <td>${data.cuota || ''}</td> 
                                             <td><input type="number" id="porCondonar" class="form-control"></td>
                                             <td><input type="date" id="fechaCondonacion" class="form-control"></td>
                                             <td><input type="text" id="tipoCondonacion" class="form-control"></td>
@@ -753,14 +972,14 @@ function editarSocio(id) {
                                     </tbody>
                                 </table>
                             </div>
-                            <button class="btn btn-primary w-100 mt-3" onclick="guardarCondonacion(${id})">
-                                <i class="fa-solid fa-save"></i> Guardar 
+                            <button class="btn btn-primary w-100 mt-3" id="btnGuardarCondonacion">
+                                <i class="fa-solid fa-save"></i> Guardar Condonación
                             </button>
 
                             <h5 style="font-weight: bold; margin-top: 30px; margin-bottom: 15px;">Comentario Dirección</h5>
                             <input type="text" id="comentarioDireccion" class="form-control mb-3" placeholder="Agregar comentario">
-                            <button class="btn btn-primary w-100 mt-2" onclick="guardarComentario(${id})">
-                                <i class="fa-solid fa-save"></i> Guardar 
+                            <button class="btn btn-primary w-100 mt-2" id="btnGuardarComentario">
+                                <i class="fa-solid fa-save"></i> Guardar Comentario
                             </button>
 
                             <h5 style="font-weight: bold; margin-top: 30px; margin-bottom: 15px;">Historial de Comentarios Dirección</h5>
@@ -774,7 +993,7 @@ function editarSocio(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialComentarios">
-                                        <!-- Populate with comments history -->
+                                        <!-- Aquí puedes cargar los comentarios existentes si es necesario -->
                                     </tbody>
                                 </table>
                             </div>
@@ -787,8 +1006,132 @@ function editarSocio(id) {
                         popup: 'swal2-popup-custom',
                     },
                     width: '800px', 
+                    didRender: () => {
+                       
+
+                       
+                        $('#btnGuardarAbono').on('click', function() {
+                            guardarAbono(id);
+                        });
+
+                   
+                        $('#btnGuardarCondonacion').on('click', function() {
+                            guardarCondonacion(id);
+                        });
+
+                        
+                        $('#btnGuardarComentario').on('click', function() {
+                            guardarComentario(id);
+                        });
+                    }
                 });
 
+               
+                function guardarAbono(id) {
+                    const porCobrar = $('#porCobrar').val();
+                    const monto = $('#monto').val();
+                    const formaPago = $('#formaPago').val();
+                    const fechaPago = $('#fechaPago').val();
+
+                    if (!porCobrar || !monto || !formaPago || !fechaPago) {
+                        Swal.fire('Error', 'Por favor, completa todos los campos de Abono.', 'warning');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'guardarAbono.php',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            porCobrar: porCobrar,
+                            monto: monto,
+                            formaPago: formaPago,
+                            fechaPago: fechaPago
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response);
+                            if (res.success) {
+                                Swal.fire('Éxito', 'Abono guardado correctamente.', 'success');
+                              
+                            } else {
+                                Swal.fire('Error', res.message || 'No se pudo guardar el abono.', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+                        }
+                    });
+                }
+
+                function guardarCondonacion(id) {
+                    const porCondonar = $('#porCondonar').val();
+                    const fechaCondonacion = $('#fechaCondonacion').val();
+                    const tipoCondonacion = $('#tipoCondonacion').val();
+                    const montoCondonacion = $('#montoCondonacion').val();
+
+                    if (!porCondonar || !fechaCondonacion || !tipoCondonacion || !montoCondonacion) {
+                        Swal.fire('Error', 'Por favor, completa todos los campos de Condonación.', 'warning');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'guardarCondonacion.php',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            porCondonar: porCondonar,
+                            fechaCondonacion: fechaCondonacion,
+                            tipoCondonacion: tipoCondonacion,
+                            montoCondonacion: montoCondonacion
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response);
+                            if (res.success) {
+                                Swal.fire('Éxito', 'Condonación guardada correctamente.', 'success');
+                             
+                            } else {
+                                Swal.fire('Error', res.message || 'No se pudo guardar la condonación.', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+                        }
+                    });
+                }
+
+                
+    function guardarComentario(id) {
+    const comentarioDireccion = $('#comentarioDireccion').val().trim();
+
+    if (!comentarioDireccion) {
+        Swal.fire('Error', 'Por favor, ingresa un comentario.', 'warning');
+        return;
+    }
+    
+    console.log('Llamando a guardarComentario.php');
+    console.log({ id: id, comentarioDireccion: comentarioDireccion });
+    
+    $.ajax({
+        url: 'guardarComentario.php',
+        type: 'POST',
+        data: {
+            id: id,
+            comentarioDireccion: comentarioDireccion
+        },
+        success: function(response) {
+            
+            if (response.success) {
+                Swal.fire('Éxito', 'Comentario guardado correctamente.', 'success');
+                $('#comentarioDireccion').val(''); 
+            } else {
+                Swal.fire('Error', response.message || 'No se pudo guardar el comentario.', 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+        }
+    });
+}
             } catch (error) {
                 console.error('Error al parsear la respuesta:', error);
                 Swal.fire('Error', 'No se pudo recuperar los datos del socio.', 'error');
@@ -798,9 +1141,12 @@ function editarSocio(id) {
             console.error('Error:', textStatus, errorThrown);
             Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
         }
+        
     });
 }
 
+
+//BUSQUEDA CON FILTROS 
 $(document).ready(function () {
     // FILTRAR POR SOCIO
     $('#estado').change(function () {
@@ -845,33 +1191,32 @@ $(document).ready(function () {
     });
 });
 
-//CALCULAR LOS PRECIOS DE CADA SOCIO
-document.getElementById('socioSelect').addEventListener('change', function() {
-    const socioId = this.value;
 
-    fetch('gestionPrecios.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `socio_id=${socioId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.querySelector('.price-section .price-card:nth-child(1) .price-value').textContent = `$${data.totalInicial}`;
-        document.querySelector('.price-section .price-card:nth-child(2) .price-value').textContent = `$${data.totalCuota}`;
-        document.querySelector('.price-section .price-card:nth-child(3) .price-value').textContent = `$${data.totalPrecio}`;
 
-        
-        if (!socioId) {
-            document.querySelector('.price-section .price-card:nth-child(1) .price-value').textContent = `$0.00`;
-            document.querySelector('.price-section .price-card:nth-child(2) .price-value').textContent = `$0.00`;
-            document.querySelector('.price-section .price-card:nth-child(3) .price-value').textContent = `$0.00`;
-        }
-    })
-    .catch(error => console.error('Error:', error));
+
+//CALCULAR LOS PRECIOS DE CADA SOCIo
+
+document.addEventListener('DOMContentLoaded', function () {
+    const socioSelect = document.getElementById('socioSelect'); 
+    const totalInicialElement = document.querySelector('.price-section .price-card:nth-child(1) .price-value');
+
+    socioSelect.addEventListener('change', function () {
+        const socioNombre = this.value; 
+
+        fetch('gestionPrecios.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `socio_nombre=${socioNombre}` 
+        })
+        .then(response => response.json())
+        .then(data => {
+            totalInicialElement.textContent = `$${data.total_inicial.toFixed(2)}`;
+        })
+        .catch(error => console.error('Error:', error));
+    });
 });
-
 
 
 
