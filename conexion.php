@@ -10,12 +10,12 @@ $conex = mysqli_connect($DATABASE_HOST, $DATABASE_USER, $DATABASE_PASS, $DATABAS
 
 if (mysqli_connect_error()) {
 
-    //Si se encuentra error en la conexiòn
+   
 
     exit('Fallo en la conexiòn con la base de datos');
     
 } else {
-    //Si no hay errores en la conexiòn
+   
     //echo "Conexion exitosa";
 }
     

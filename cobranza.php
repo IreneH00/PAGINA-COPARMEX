@@ -657,7 +657,7 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialPagos">
-                                        <!-- Aquí puedes cargar los pagos existentes si es necesario -->
+                                        <!-- HISTORIAL -->
                                     </tbody>
                                 </table>
                             </div>
@@ -733,7 +733,25 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialComentarios">
-                                        <!-- Aquí puedes cargar los comentarios existentes si es necesario -->
+                                    <?php
+          include 'conexion.php';
+
+          $query = "SELECT c.fecha, c.comentario, c.creado_por
+          FROM comentarios_registros c
+          ORDER BY c.fecha DESC";
+
+          $result = $conex->query($query);
+          while ($row = $result->fetch_assoc()) {
+          echo "<tr>
+            <td>" . $row['fecha'] . "</td>
+            <td>" . $row['comentario'] . "</td>
+            <td>" . $row['creado_por'] . "</td>
+          </tr>";
+          }
+          ?>
+
+
+                
                                     </tbody>
                                 </table>
                             </div>
@@ -749,131 +767,195 @@ function editarRegistro(id) {
                     didRender: () => {
                        
 
-                        
+                       
                         $('#btnGuardarAbono').on('click', function() {
                             guardarAbono(id);
                         });
 
-                        
+                   
                         $('#btnGuardarCondonacion').on('click', function() {
                             guardarCondonacion(id);
                         });
 
+                        
                         $('#btnGuardarComentario').on('click', function() {
                             guardarComentario(id);
+
                         });
+
+                       
                     }
                 });
 
-              
-                function guardarAbono(id) {
-                    const porCobrar = $('#porCobrar').val();
-                    const monto = $('#monto').val();
-                    const formaPago = $('#formaPago').val();
-                    const fechaPago = $('#fechaPago').val();
+               
+              // GUARDAR ABONO DEL REGISTRO DEL SOCIO 
+              function guardarAbono(id) {
+   
+   const porCobrar = $('#porCobrar').val();
+   const monto = $('#monto').val();
+   const formaPago = $('#formaPago').val();
+   const fechaPago = $('#fechaPago').val();
+   const totalAnualidad = $('#abonoSection td:first').text().trim();
 
-                    if (!porCobrar || !monto || !formaPago || !fechaPago) {
-                        Swal.fire('Error', 'Por favor, completa todos los campos de Abono.', 'warning');
-                        return;
-                    }
+  
+   if (!porCobrar || !monto || !formaPago || !fechaPago) {
+       Swal.fire('Error', 'Por favor, completa todos los campos.', 'warning');
+       return;
+   }
 
-                    $.ajax({
-                        url: 'guardarAbono.php',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            porCobrar: porCobrar,
-                            monto: monto,
-                            formaPago: formaPago,
-                            fechaPago: fechaPago
-                        },
-                        success: function(response) {
-                            const res = JSON.parse(response);
-                            if (res.success) {
-                                Swal.fire('Éxito', 'Abono guardado correctamente.', 'success');
-                               
-                            } else {
-                                Swal.fire('Error', res.message || 'No se pudo guardar el abono.', 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
-                        }
-                    });
-                }
+  
+   $.ajax({
+       url: 'guardarAbonoRegistro.php',
+       type: 'POST',
+       data: {
+           id: id, 
+           totalAnualidad: totalAnualidad,
+           porCobrar: porCobrar,
+           monto: monto,
+           formaPago: formaPago,
+           fechaPago: fechaPago
+       },
+       success: function(response) {
+         
+           try {
+               const result = JSON.parse(response);
+               if (result.success) {
+                   Swal.fire('Éxito', 'El abono ha sido guardado correctamente.', 'success');
+                   
+                   $('#porCobrar').val('');
+                   $('#monto').val('');
+                   $('#formaPago').val('');
+                   $('#fechaPago').val('');
+               } else {
+                   Swal.fire('Error', result.message || 'No se pudo guardar el abono.', 'error');
+               }
+           } catch (error) {
+               Swal.fire('Error', 'Error al procesar la respuesta del servidor.', 'error');
+           }
+       },
+       error: function() {
+           Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+       }
+   });
+}
 
-                function guardarCondonacion(id) {
-                    const porCondonar = $('#porCondonar').val();
-                    const fechaCondonacion = $('#fechaCondonacion').val();
-                    const tipoCondonacion = $('#tipoCondonacion').val();
-                    const montoCondonacion = $('#montoCondonacion').val();
+function guardarCondonacion(id) {
+   
+   const porCondonar = $('#porCondonar').val();
+   const fechaCondonacion = $('#fechaCondonacion').val();
+   const tipoCondonacion = $('#tipoCondonacion').val();
+   const montoCondonacion = $('#montoCondonacion').val();
+   const totalAnualidad = $('#condonacionSection td:first').text().trim(); 
 
-                    if (!porCondonar || !fechaCondonacion || !tipoCondonacion || !montoCondonacion) {
-                        Swal.fire('Error', 'Por favor, completa todos los campos de Condonación.', 'warning');
-                        return;
-                    }
+  
+   if (!porCondonar || !fechaCondonacion || !tipoCondonacion || !montoCondonacion) {
+       Swal.fire('Error', 'Por favor, completa todos los campos.', 'warning');
+       return;
+   }
 
-                    $.ajax({
-                        url: 'guardarCondonacion.php',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            porCondonar: porCondonar,
-                            fechaCondonacion: fechaCondonacion,
-                            tipoCondonacion: tipoCondonacion,
-                            montoCondonacion: montoCondonacion
-                        },
-                        success: function(response) {
-                            const res = JSON.parse(response);
-                            if (res.success) {
-                                Swal.fire('Éxito', 'Condonación guardada correctamente.', 'success');
-                                
-                            } else {
-                                Swal.fire('Error', res.message || 'No se pudo guardar la condonación.', 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
-                        }
-                    });
-                }
+   console.log('Datos enviados para condonación:', {
+       id: id,
+       totalAnualidad: totalAnualidad,
+       porCondonar: porCondonar,
+       fechaCondonacion: fechaCondonacion,
+       tipoCondonacion: tipoCondonacion,
+       montoCondonacion: montoCondonacion
+   });
 
-                function guardarComentario(id) {
-                    const comentarioDireccion = $('#comentarioDireccion').val().trim();
+   
+   $.ajax({
+       url: 'guardarCondonacionRegistro.php', 
+       type: 'POST',
+       data: {
+           id: id, 
+           totalAnualidad: totalAnualidad,
+           porCondonar: porCondonar,
+           fechaCondonacion: fechaCondonacion,
+           tipoCondonacion: tipoCondonacion,
+           montoCondonacion: montoCondonacion
+       },
+       success: function(response) {
+           console.log('Respuesta del servidor:', response);
+          
+           try {
+               const result = JSON.parse(response);
+               if (result.success) {
+                   Swal.fire('Éxito', 'La condonación ha sido guardada correctamente.', 'success');
+                   
+                   $('#porCondonar').val('');
+                   $('#fechaCondonacion').val('');
+                   $('#tipoCondonacion').val('');
+                   $('#montoCondonacion').val('');
+               } else {
+                   Swal.fire('Error', result.message || 'No se pudo guardar la condonación.', 'error');
+               }
+           } catch (error) {
+               console.error('Error al procesar JSON:', error);
+               Swal.fire('Error', 'Error al procesar la respuesta del servidor.', 'error');
+           }
+       },
+       error: function(jqXHR, textStatus, errorThrown) {
+           console.error('Error en AJAX:', textStatus, errorThrown);
+           Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+       }
+   });
+}
 
-                    if (!comentarioDireccion) {
-                        Swal.fire('Error', 'Por favor, ingresa un comentario.', 'warning');
-                        return;
-                    }
-                    console.log('Llamando a guardarComentario.php');
-                    console.log({ id: id, comentarioDireccion: comentarioDireccion });
-                    $.ajax({
-                      
-                        url: 'guardarComentario.php',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            comentarioDireccion: comentarioDireccion
-                        },
-                        success: function(response) {
-                            const res = JSON.parse(response);
-                            if (res.success) {
-                                Swal.fire('Éxito', 'Comentario guardado correctamente.', 'success');
-                                
-                                $('#comentarioDireccion').val(''); 
-                            } else {
-                                Swal.fire('Error', res.message || 'No se pudo guardar el comentario.', 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
-                        }
-                    });
-                }
+                
+    function guardarComentario(id) {
+    const comentarioDireccion = $('#comentarioDireccion').val().trim();
+
+    if (!comentarioDireccion) {
+        Swal.fire('Error', 'Por favor, ingresa un comentario.', 'warning');
+        return;
+    }
+    
+    console.log('Llamando a guardarComentario.php');
+    console.log({ id: id, comentarioDireccion: comentarioDireccion });
+    
+    $.ajax({
+        url: 'guardarComentarioRegistros.php',
+        type: 'POST',
+        data: {
+            id: id,
+            comentarioDireccion: comentarioDireccion
+        },
+        success: function(response) {
+            const res = JSON.parse(response);
+            if (res.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Comentario guardado correctamente.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                
+                $('#comentarioDireccion').val('');
+
+               
+                $('#historialComentarios').append(`
+                    <tr>
+                        <td>${res.fecha}</td>
+                        <td>${comentarioDireccion}</td>
+                        <td>${res.creado_por}</td>
+                    </tr>
+                `);
+
+            } else {
+                Swal.fire('Error', res.message || 'No se pudo guardar el comentario.', 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
+        }
+    });
+}
 
             } catch (error) {
                 console.error('Error al parsear la respuesta:', error);
-                Swal.fire('Error', 'No se pudo recuperar los datos del socio.', 'error');
+                Swal.fire('Error', 'No se pudo recuperar los datos del registro.', 'error');
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -886,11 +968,8 @@ function editarRegistro(id) {
 
 
 
-
-
-
     //EDITAR SOCIO
-    function editarSocio(id) {
+function editarSocio(id) {
     $.ajax({
         url: 'obtenerDatosSocios.php',
         type: 'POST',
@@ -900,7 +979,7 @@ function editarRegistro(id) {
                 const data = JSON.parse(response);
 
                 Swal.fire({
-                    title: 'Editar Registro de socios a eventos',
+                    title: 'Editar Socio',
                     html: `
                         <div style="max-width: 800px; overflow-y: auto; font-size: 14px; padding: 20px;">
                             <h5 style="font-weight: bold; margin-bottom: 15px;">Historial de Pagos</h5>
@@ -917,8 +996,80 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialPagos">
-                                        <!-- Aquí puedes cargar los pagos existentes si es necesario -->
-                                    </tbody>
+    <?php
+    include 'conexion.php'; 
+
+   
+    $socio_id = 1; 
+
+    
+    $query_abonos = "SELECT total_anualidad, por_cobrar, monto, forma_pago, fecha_pago
+                     FROM abonos
+                     WHERE socio_id = ?
+                     ORDER BY fecha_pago DESC";
+
+    if ($stmt_abonos = $conex->prepare($query_abonos)) {
+        $stmt_abonos->bind_param('i', $socio_id);
+        $stmt_abonos->execute();
+        $result_abonos = $stmt_abonos->get_result();
+
+        echo "<tr><th colspan='5' class='table-primary'>Historial de Abonos</th></tr>";
+
+        if ($result_abonos->num_rows > 0) {
+            
+            while ($row = $result_abonos->fetch_assoc()) {
+                echo "<tr>
+                        <td>" . $row['fecha_pago'] . "</td>
+                        <td>" . $row['total_anualidad'] . "</td>
+                        <td>" . $row['por_cobrar'] . "</td>
+                        <td>" . $row['forma_pago'] . "</td>
+                        <td>" . $row['monto'] . "</td>
+                      </tr>";
+            }
+        } else {
+            echo "<tr><td colspan='5'>No hay abonos registrados.</td></tr>";
+        }
+        $stmt_abonos->close();
+    } else {
+        echo "<tr><td colspan='5'>Error al preparar la consulta de abonos.</td></tr>";
+    }
+
+    $query_condonaciones = "SELECT total_anualidad, por_condonar, fecha_condonacion, tipo, monto_condonacion
+                            FROM condonaciones
+                            WHERE socio_id = ?
+                            ORDER BY fecha_condonacion DESC";
+
+    if ($stmt_condonaciones = $conex->prepare($query_condonaciones)) {
+        $stmt_condonaciones->bind_param('i', $socio_id);
+        $stmt_condonaciones->execute();
+        $result_condonaciones = $stmt_condonaciones->get_result();
+
+        echo "<tr><th colspan='5' class='table-primary'>Historial de Condonaciones</th></tr>";
+
+        if ($result_condonaciones->num_rows > 0) {
+            
+            while ($row = $result_condonaciones->fetch_assoc()) {
+                echo "<tr>
+                        <td>" . $row['fecha_condonacion'] . "</td>
+                        <td>" . $row['total_anualidad'] . "</td>
+                        <td>" . $row['por_condonar'] . "</td>
+                        <td>" . $row['tipo'] . "</td>
+                        <td>" . $row['monto_condonacion'] . "</td>
+                      </tr>";
+            }
+        } else {
+            echo "<tr><td colspan='5'>No hay condonaciones registradas.</td></tr>";
+        }
+        $stmt_condonaciones->close();
+    } else {
+        echo "<tr><td colspan='5'>Error al preparar la consulta de condonaciones.</td></tr>";
+    }
+
+    
+    $conex->close();
+    ?>
+</tbody>
+
                                 </table>
                             </div>
                             
@@ -993,7 +1144,24 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialComentarios">
-                                        <!-- Aquí puedes cargar los comentarios existentes si es necesario -->
+                                  
+                                    <?php
+      include 'conexion.php';
+
+      $query = "SELECT c.fecha, c.comentario, c.creado_por
+          FROM comentarios_direccion c
+          ORDER BY c.fecha DESC";
+
+      $result = $conex->query($query);
+      while ($row = $result->fetch_assoc()) {
+     echo "<tr>
+            <td>" . $row['fecha'] . "</td>
+            <td>" . $row['comentario'] . "</td>
+            <td>" . $row['creado_por'] . "</td>
+          </tr>";
+      }
+      ?>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -1023,83 +1191,126 @@ function editarRegistro(id) {
                         $('#btnGuardarComentario').on('click', function() {
                             guardarComentario(id);
                         });
+
+                       
                     }
                 });
 
-               
+               // GUARDAR ABONO DEL SOCIO 
                 function guardarAbono(id) {
-                    const porCobrar = $('#porCobrar').val();
-                    const monto = $('#monto').val();
-                    const formaPago = $('#formaPago').val();
-                    const fechaPago = $('#fechaPago').val();
+   
+    const porCobrar = $('#porCobrar').val();
+    const monto = $('#monto').val();
+    const formaPago = $('#formaPago').val();
+    const fechaPago = $('#fechaPago').val();
+    const totalAnualidad = $('#abonoSection td:first').text().trim();
 
-                    if (!porCobrar || !monto || !formaPago || !fechaPago) {
-                        Swal.fire('Error', 'Por favor, completa todos los campos de Abono.', 'warning');
-                        return;
-                    }
+   
+    if (!porCobrar || !monto || !formaPago || !fechaPago) {
+        Swal.fire('Error', 'Por favor, completa todos los campos.', 'warning');
+        return;
+    }
 
-                    $.ajax({
-                        url: 'guardarAbono.php',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            porCobrar: porCobrar,
-                            monto: monto,
-                            formaPago: formaPago,
-                            fechaPago: fechaPago
-                        },
-                        success: function(response) {
-                            const res = JSON.parse(response);
-                            if (res.success) {
-                                Swal.fire('Éxito', 'Abono guardado correctamente.', 'success');
-                              
-                            } else {
-                                Swal.fire('Error', res.message || 'No se pudo guardar el abono.', 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
-                        }
-                    });
+   
+    $.ajax({
+        url: 'guardarAbono.php',
+        type: 'POST',
+        data: {
+            id: id, 
+            totalAnualidad: totalAnualidad,
+            porCobrar: porCobrar,
+            monto: monto,
+            formaPago: formaPago,
+            fechaPago: fechaPago
+        },
+        success: function(response) {
+          
+            try {
+                const result = JSON.parse(response);
+                if (result.success) {
+                    Swal.fire('Éxito', 'El abono ha sido guardado correctamente.', 'success');
+                    
+                    $('#porCobrar').val('');
+                    $('#monto').val('');
+                    $('#formaPago').val('');
+                    $('#fechaPago').val('');
+                } else {
+                    Swal.fire('Error', result.message || 'No se pudo guardar el abono.', 'error');
                 }
+            } catch (error) {
+                Swal.fire('Error', 'Error al procesar la respuesta del servidor.', 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+        }
+    });
+}
 
-                function guardarCondonacion(id) {
-                    const porCondonar = $('#porCondonar').val();
-                    const fechaCondonacion = $('#fechaCondonacion').val();
-                    const tipoCondonacion = $('#tipoCondonacion').val();
-                    const montoCondonacion = $('#montoCondonacion').val();
+function guardarCondonacion(id) {
+    
+    const porCondonar = $('#porCondonar').val();
+    const fechaCondonacion = $('#fechaCondonacion').val();
+    const tipoCondonacion = $('#tipoCondonacion').val();
+    const montoCondonacion = $('#montoCondonacion').val();
+    const totalAnualidad = $('#condonacionSection td:first').text().trim(); 
 
-                    if (!porCondonar || !fechaCondonacion || !tipoCondonacion || !montoCondonacion) {
-                        Swal.fire('Error', 'Por favor, completa todos los campos de Condonación.', 'warning');
-                        return;
-                    }
+   
+    if (!porCondonar || !fechaCondonacion || !tipoCondonacion || !montoCondonacion) {
+        Swal.fire('Error', 'Por favor, completa todos los campos.', 'warning');
+        return;
+    }
 
-                    $.ajax({
-                        url: 'guardarCondonacion.php',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            porCondonar: porCondonar,
-                            fechaCondonacion: fechaCondonacion,
-                            tipoCondonacion: tipoCondonacion,
-                            montoCondonacion: montoCondonacion
-                        },
-                        success: function(response) {
-                            const res = JSON.parse(response);
-                            if (res.success) {
-                                Swal.fire('Éxito', 'Condonación guardada correctamente.', 'success');
-                             
-                            } else {
-                                Swal.fire('Error', res.message || 'No se pudo guardar la condonación.', 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Error al conectar con el servidor.', 'error');
-                        }
-                    });
+    console.log('Datos enviados para condonación:', {
+        id: id,
+        totalAnualidad: totalAnualidad,
+        porCondonar: porCondonar,
+        fechaCondonacion: fechaCondonacion,
+        tipoCondonacion: tipoCondonacion,
+        montoCondonacion: montoCondonacion
+    });
+
+    
+    $.ajax({
+        url: 'guardarCondonacion.php', 
+        type: 'POST',
+        data: {
+            id: id, 
+            totalAnualidad: totalAnualidad,
+            porCondonar: porCondonar,
+            fechaCondonacion: fechaCondonacion,
+            tipoCondonacion: tipoCondonacion,
+            montoCondonacion: montoCondonacion
+        },
+        success: function(response) {
+            console.log('Respuesta del servidor:', response);
+           
+            try {
+                const result = JSON.parse(response);
+                if (result.success) {
+                    Swal.fire('Éxito', 'La condonación ha sido guardada correctamente.', 'success');
+                    
+                    $('#porCondonar').val('');
+                    $('#fechaCondonacion').val('');
+                    $('#tipoCondonacion').val('');
+                    $('#montoCondonacion').val('');
+                } else {
+                    Swal.fire('Error', result.message || 'No se pudo guardar la condonación.', 'error');
                 }
+            } catch (error) {
+                console.error('Error al procesar JSON:', error);
+                Swal.fire('Error', 'Error al procesar la respuesta del servidor.', 'error');
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error en AJAX:', textStatus, errorThrown);
+            Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+        }
+    });
+}
 
-                
+
+    // GUARDAR COMENTARIO DEL EJECUTIVO AFILIADO AL SOCIO
     function guardarComentario(id) {
     const comentarioDireccion = $('#comentarioDireccion').val().trim();
 
@@ -1112,7 +1323,7 @@ function editarRegistro(id) {
     console.log({ id: id, comentarioDireccion: comentarioDireccion });
     
     $.ajax({
-        url: 'guardarComentario.php',
+        url: 'guardarComentarioSocios.php',
         type: 'POST',
         data: {
             id: id,
@@ -1196,28 +1407,8 @@ $(document).ready(function () {
 
 //CALCULAR LOS PRECIOS DE CADA SOCIo
 
-document.addEventListener('DOMContentLoaded', function () {
-    const socioSelect = document.getElementById('socioSelect'); 
-    const totalInicialElement = document.querySelector('.price-section .price-card:nth-child(1) .price-value');
-
-    socioSelect.addEventListener('change', function () {
-        const socioNombre = this.value; 
-
-        fetch('gestionPrecios.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `socio_nombre=${socioNombre}` 
-        })
-        .then(response => response.json())
-        .then(data => {
-            totalInicialElement.textContent = `$${data.total_inicial.toFixed(2)}`;
-        })
-        .catch(error => console.error('Error:', error));
-    });
-});
-
+function calcularPrecios() {
+}
 
 
   </script>

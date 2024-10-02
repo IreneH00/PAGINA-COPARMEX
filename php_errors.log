@@ -1,0 +1,100 @@
+[27-Sep-2024 19:29:34 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 19:29:34 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 19:34:31 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 19:34:31 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:12:43 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:12:44 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:16:38 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:16:38 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:17:20 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:17:20 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:19:19 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:19:19 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:20:28 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:20:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:20:40 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:20:40 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:37:18 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:37:18 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:49:12 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:49:12 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:50:50 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:50:50 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:51:19 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 20:51:19 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:03:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:03:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:10:28 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[27-Sep-2024 21:10:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php:24
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[27-Sep-2024 21:11:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:11:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:11:27 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[27-Sep-2024 21:11:27 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php:24
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[27-Sep-2024 21:12:58 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[27-Sep-2024 21:12:58 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php:24
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[27-Sep-2024 21:16:49 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:16:49 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:22:19 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[27-Sep-2024 21:22:19 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php:26
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarComentario.php on line 26
+[30-Sep-2024 17:17:09 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
+[30-Sep-2024 17:17:09 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php:24
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pagina_Coparmex\guardarAbono.php on line 24
