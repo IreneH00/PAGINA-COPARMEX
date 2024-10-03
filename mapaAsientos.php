@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Asientos</title>
+    <title>Mapa de Asientos Profesional con Three.js</title>
     <style>
         body {
             margin: 0;
@@ -39,7 +39,7 @@
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3; 
+            background-color: #0056b3; /* Cambia el color al pasar el mouse */
         }
     </style>
 </head>
@@ -60,9 +60,9 @@
     <button type="submit">Generar Mapa</button>
 </form>
 
-
+<!-- Three.js CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+<!-- OrbitControls.js para controles interactivos -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
@@ -72,62 +72,62 @@
     function init() {
         const container = document.getElementById('canvas-container');
 
-        
+        // Escena
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf4f4f4);
 
-       
+        // Cámara
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 200, 400);
 
-      
+        // Renderizador
         renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true; 
+        renderer.shadowMap.enabled = true; // Activar sombras
         container.appendChild(renderer.domElement);
 
-      
+        // Controles de órbita
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2; 
+        controls.maxPolarAngle = Math.PI / 2; // Limitar la cámara
 
-        
+        // Luz ambiental
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
-        
+        // Luz direccional (para sombras)
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(100, 200, 100);
         directionalLight.castShadow = true;
         scene.add(directionalLight);
 
-        // SUELO
+        // Suelo
         const floorGeometry = new THREE.PlaneGeometry(1000, 1000);
-        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.rotation.x = -Math.PI / 2;
         floor.receiveShadow = true;
         scene.add(floor);
 
-        
+        // Grupo para mesas y sillas
         tablesGroup = new THREE.Group();
         scene.add(tablesGroup);
 
-       
+        // Grupo para el escenario
         stageGroup = new THREE.Group();
         scene.add(stageGroup);
 
-       
+        // Crear escenario
         crearEscenario();
 
-       
+        // Animar la escena
         animate();
     }
 
     function animate() {
         requestAnimationFrame(animate);
-        controls.update(); 
+        controls.update(); // Actualizar los controles en cada frame
         renderer.render(scene, camera);
     }
 
@@ -138,14 +138,14 @@
         let mesaGeometry, mesaMaterial;
 
         if (esPrincipal) {
-           
-            mesaGeometry = new THREE.BoxGeometry(anchoMesa, 20, largoMesa);
+            // Mesa rectangular
+            mesaGeometry = new THREE.BoxGeometry(anchoMesa, 10, largoMesa);
             mesaMaterial = new THREE.MeshStandardMaterial({
                 map: texturaMesa,
-                color: 0xFFD700
+                color: 0xFFD700 // Color dorado para la mesa principal
             });
         } else {
-           
+            // Mesa circular
             mesaGeometry = new THREE.CylinderGeometry(50, 50, 10, 32);
             mesaMaterial = new THREE.MeshStandardMaterial({
                 map: texturaMesa,
@@ -164,12 +164,12 @@
 
         tablesGroup.add(mesa);
 
-      
+        // Sillas
         const sillaMaterial = new THREE.MeshStandardMaterial({ map: texturaSilla });
         let sillaGeometry;
 
         if (esPrincipal) {
-           
+            // Sillas para mesa rectangular
             sillaGeometry = new THREE.BoxGeometry(10, 20, 10);
             const numSillasPorLado = Math.ceil(numAsientos / 4);
             const spacingX = anchoMesa / (numSillasPorLado + 1);
@@ -177,12 +177,13 @@
 
             let count = 0;
 
+            // Lados largos (frontal y trasero)
             for (let i = 1; i <= numSillasPorLado && count < numAsientos; i++) {
                 const posX = x - anchoMesa / 2 + i * spacingX;
                 const posZFront = z - largoMesa / 2 - 15;
                 const posZBack = z + largoMesa / 2 + 15;
 
-               
+                // Silla frontal
                 const sillaFront = new THREE.Mesh(sillaGeometry, sillaMaterial);
                 sillaFront.position.set(posX, 15, posZFront);
                 sillaFront.lookAt(new THREE.Vector3(x, 15, z));
@@ -190,7 +191,7 @@
                 tablesGroup.add(sillaFront);
                 count++;
 
-               
+                // Silla trasera
                 if (count < numAsientos) {
                     const sillaBack = new THREE.Mesh(sillaGeometry, sillaMaterial);
                     sillaBack.position.set(posX, 15, posZBack);
@@ -201,14 +202,14 @@
                 }
             }
 
-          
-            const numSillasLargo = Math.ceil(numAsientos / 2 / 2); 
+            // Lados cortos (izquierda y derecha)
+            const numSillasLargo = Math.ceil(numAsientos / 2 / 2); // Distribuir equitativamente
             for (let i = 1; i <= numSillasLargo && count < numAsientos; i++) {
                 const posZ = z - largoMesa / 2 + i * spacingZ;
                 const posXLeft = x - anchoMesa / 2 - 15;
                 const posXRight = x + anchoMesa / 2 + 15;
 
-                
+                // Silla izquierda
                 const sillaLeft = new THREE.Mesh(sillaGeometry, sillaMaterial);
                 sillaLeft.position.set(posXLeft, 15, posZ);
                 sillaLeft.rotation.y = Math.PI / 2;
@@ -216,7 +217,7 @@
                 tablesGroup.add(sillaLeft);
                 count++;
 
-               
+                // Silla derecha
                 if (count < numAsientos) {
                     const sillaRight = new THREE.Mesh(sillaGeometry, sillaMaterial);
                     sillaRight.position.set(posXRight, 15, posZ);
@@ -227,7 +228,7 @@
                 }
             }
         } else {
-           
+            // Sillas para mesa circular
             const sillaGeometryCircular = new THREE.BoxGeometry(10, 20, 10);
             for (let i = 0; i < numAsientos; i++) {
                 const angulo = (2 * Math.PI / numAsientos) * i;
@@ -245,18 +246,17 @@
     }
 
     function crearEscenario() {
-    
+    // Cambia la URL de la textura a una que sea más oscura o usa un color oscuro
     const texturaEscenario = new THREE.TextureLoader().load('https://images.pexels.com/photos/7233108/pexels-photo-7233108.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); // Puedes cambiar esta URL por otra textura si lo deseas
     const escenarioMaterial = new THREE.MeshStandardMaterial({ 
         map: texturaEscenario,
-        color: 0x444444, 
-        side: THREE.DoubleSide 
+        color: 0x444444, // Color gris oscuro para el escenario
+        side: THREE.DoubleSide // Para que la textura sea visible desde ambos lados
     });
-    const escenarioGeometry = new THREE.BoxGeometry(300, 150, 10);
+    const escenarioGeometry = new THREE.BoxGeometry(300, 150, 10); // Escenario como una pared
 
     const escenario = new THREE.Mesh(escenarioGeometry, escenarioMaterial);
-   escenario.position.set(0, 50, -400);
- 
+    escenario.position.set(0, 50, -20); // Colocado enfrente de la mesa principal
     escenario.receiveShadow = true;
     escenario.castShadow = true;
 
@@ -267,7 +267,7 @@
     document.getElementById('seatForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
-       
+        // Limpiar solo el grupo de mesas y sillas
         while (tablesGroup.children.length > 0) {
             const obj = tablesGroup.children[0];
             tablesGroup.remove(obj);
@@ -276,7 +276,7 @@
         const mesas = parseInt(document.getElementById('mesas').value);
         const asientos = parseInt(document.getElementById('asientos').value);
 
-       
+        // Validación simple para evitar valores extremos.
         if (mesas > 40 || asientos > 20) {
             alert("Por favor ingresa un número razonable (máximo 40 mesas y 20 asientos por mesa).");
             return;
@@ -284,16 +284,16 @@
 
         const mesaPrincipal = parseInt(document.getElementById('mesaPrincipal').value);
 
-    
-        crearMesaConSillas(mesaPrincipal, 120, 80, true, 0, 100, 0); 
+        // Crear mesa principal
+        crearMesaConSillas(mesaPrincipal, 120, 80, true, 0, 200, 0); // Colocada al frente (ajustado el z)
 
-        
+        // Distribuir las mesas en 4 columnas detrás de la mesa principal
         const columnas = 4;
         const filas = Math.ceil(mesas / columnas);
-        const espacioX = 200; 
-        const espacioZ = 150; 
+        const espacioX = 150; // Espacio entre columnas
+        const espacioZ = 150; // Espacio entre filas
         const inicioX = -((columnas - 1) * espacioX) / 2;
-        const inicioZ = 200 + espacioZ; 
+        const inicioZ = 200 + espacioZ; // Iniciar detrás de la mesa principal
 
         let mesaActual = 0;
 
