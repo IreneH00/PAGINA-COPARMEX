@@ -250,20 +250,20 @@ table tr td.no-pagado {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: #d4edda; /* Color de fondo */
-    color: #155724; /* Color del texto */
+    background-color: #d4edda;
+    color: #155724; 
     padding: 15px;
-    border: 1px solid #c3e6cb; /* Borde */
-    border-radius: 5px; /* Bordes redondeados */
-    z-index: 9999; /* Asegura que esté por encima de otros elementos */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
-    font-family: Arial, sans-serif; /* Tipo de letra */
-    transition: opacity 0.5s ease; /* Transición suave */
+    border: 1px solid #c3e6cb; 
+    border-radius: 5px; 
+    z-index: 9999; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    font-family: Arial, sans-serif; 
+    transition: opacity 0.5s ease; 
 }
 
 #mensajeExito i {
-    margin-right: 10px; /* Espacio entre el icono y el texto */
-    font-size: 20px; /* Tamaño del icono */
+    margin-right: 10px; 
+    font-size: 20px;
 }
  
 
@@ -432,23 +432,26 @@ while ($fila2 = $resultado2->fetch_assoc()) {
 
       <div class="price-section">
     <div class="price-card">
-        <div class="price-value">$0.00</div>
-        <div class="price-title">Total inicial</div>    <!--Suma de anualidades-->
-
+        <div class="price-value" id="total_inicial"></div>
+        <div class="price-title">Total inicial</div>
     </div>
     <div class="price-card">
-        <div class="price-value">$0.00</div>
-        <div class="price-title">Total pagado</div>    <!--Suma de montos abonos  -->
+        <div class="price-value" id="total_pagado"></div>
+        <div class="price-title">Total pagado</div>
     </div>
     <div class="price-card">
-        <div class="price-value">$0.00</div>
-        <div class="price-title">Total condonado</div>  <!--Suma de montos condonados -->
+        <div class="price-value" id="total_condonado"></div>
+        <div class="price-title">Total condonado</div>
     </div>
     <div class="price-card">
-        <div class="price-value">$0.00</div>
-        <div class="price-title">Total por cobrar</div>  <!--Suma de la columna "por cobrar"-->
+        <div class="price-value" id="total_por_cobrar"></div>
+        <div class="price-title">Total por cobrar</div>
     </div>
 </div>
+
+
+
+
 
 <!-- ABONO -->
 <div id="mensajeExito" style="display:none; position: fixed; top: 20px; right: 20px; background-color: #d4edda; color: #155724; padding: 15px; border: 1px solid #c3e6cb; border-radius: 5px; z-index: 9999; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif;">
@@ -476,7 +479,49 @@ while ($fila2 = $resultado2->fetch_assoc()) {
   <script src="SCRIPTS/cobranza.js"></script>
   <script>
 
-   
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    document.getElementById('total_inicial').innerText = `$0.00`;
+    document.getElementById('total_pagado').innerText = `$0.00`;
+    document.getElementById('total_condonado').innerText = `$0.00`;
+    document.getElementById('total_por_cobrar').innerText = `$0.00`;
+});
+
+document.getElementById('estado').addEventListener('change', function() {
+    const socioId = this.value;
+
+    if (socioId) {
+        fetch('gestionPrecios.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `socio_id=${socioId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            
+            document.getElementById('total_inicial').innerText = `$${data.total_inicial.toFixed(2)}`;
+            document.getElementById('total_pagado').innerText = `$${data.total_pagado.toFixed(2)}`;
+            document.getElementById('total_condonado').innerText = `$${data.total_condonado.toFixed(2)}`;
+            document.getElementById('total_por_cobrar').innerText = `$${data.total_por_cobrar.toFixed(2)}`;
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        
+        document.getElementById('total_inicial').innerText = `$0.00`;
+        document.getElementById('total_pagado').innerText = `$0.00`;
+        document.getElementById('total_condonado').innerText = `$0.00`;
+        document.getElementById('total_por_cobrar').innerText = `$0.00`;
+    }
+});
+
+
 
 
   </script>

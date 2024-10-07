@@ -42,8 +42,10 @@ $('#enviarhistorial').click(function (event) {
     doc.text(date, xDate, 30);
 
     var headers = [['ID', 'Nombre del Evento', 'Nombre', 'Teléfono', 'Correo', 'Activo', 'Pagado']];
+    
     var rows = [];
-
+    
+    //var headers = [['ID', 'Cuota', 'Nombre Comercial', 'Fecha Afiliacion', 'Razon Social', 'Ejecutivo Afiliado']]
     
 
     $('table tbody tr').each(function () {
@@ -58,6 +60,10 @@ $('#enviarhistorial').click(function (event) {
       ];
       rows.push(row);
     });
+
+   
+
+
 
     doc.autoTable({
       head: headers,
@@ -238,23 +244,22 @@ $(document).ready(function () {
     });
 });
 
-//CALCULAR LOS PRECIOS DE CADA SOCIo
 
-function calcularPrecios() {
-}
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
-//EDITAR REGISTROS DE SOCIOS A EVENTOS 
+
+////////////////////////////////////////////////////EDITAR REGISTROS DE SOCIOS A EVENTOS /////////////////////////////////////////////
 
 function editarRegistro(id) {
     $.ajax({
+        
         url: 'obtenerDatosRegistros.php',
         type: 'POST',
         data: { id: id },
         success: function(response) {
             try {
                 const data = JSON.parse(response);
+                totalAnualidad = data.precio_socio;
 
                 Swal.fire({
                     title: 'Editar Registro de socios a eventos',
@@ -293,9 +298,10 @@ function editarRegistro(id) {
                                     </thead>
                                     <tbody id="abonoSection">
                                         <tr>
-                                            <td>${data.cuota || ''}</td> 
-                                           <td><input type="number" id="porCobrar" class="form-control" value="${data.porCobrar || totalAnualidad}" readonly></td>
-
+                                           
+                                            <td>${data.precio_socio || ''}</td> 
+                                            
+                                             <td><input type="number" id="porCobrar" class="form-control"></td>
                                             <td><input type="number" id="monto" class="form-control"></td>
                                             <td><input type="text" id="formaPago" class="form-control"></td>
                                             <td><input type="date" id="fechaPago" class="form-control"></td>
@@ -321,7 +327,7 @@ function editarRegistro(id) {
                                     </thead>
                                     <tbody id="condonacionSection">
                                         <tr>
-                                            <td>${data.cuota || ''}</td> 
+                                            <td>${data.precio_socio || ''}</td> 
                                             <td><input type="number" id="porCondonar" class="form-control"></td>
                                             <td><input type="date" id="fechaCondonacion" class="form-control"></td>
                                             <td><input type="text" id="tipoCondonacion" class="form-control"></td>
@@ -369,6 +375,9 @@ function editarRegistro(id) {
                        
                         cargarComentarios(id);
                         cargarHistorial(id);
+                        cargarAbonosRegistros(id);
+                        cargarCondonacionesRegistros(id);
+                        
                        
                         $('#btnGuardarAbono').on('click', function() {
                             guardarAbono(id);
@@ -384,8 +393,7 @@ function editarRegistro(id) {
                             guardarComentario(id);
 
                         });
-
-                       
+ 
                     }
                 });
 
@@ -425,7 +433,7 @@ function editarRegistro(id) {
                     });
                 }
                 
-     
+
 //OBTENER HISTORIAL DE PAGOS
 
 
@@ -450,14 +458,16 @@ function cargarHistorial(eventoId) {
                             <td>${transaccion.monto}</td>
                             <td>${transaccion.forma_pago || transaccion.tipo}</td>
                             <td>${transaccion.tipo}</td>
+                            
                             <td>${transaccion.usuario}</td>
                             <td>
                                 <a href='#' onclick='eliminarTransaccion(${transaccion.id});' class='btn btn-danger' title='Eliminar'>
-                                    <i class='fas fa-trash-alt'></i>
-                                </a>
+            <i class='fas fa-trash-alt'></i>
+        </a>
                             </td>
                         </tr>`;
                         tbody.append(row); 
+                      
                     });
                 }
             } catch (error) {
@@ -470,52 +480,30 @@ function cargarHistorial(eventoId) {
     });
 }
 
-          
-function eliminarTransaccion(transaccionId, tipo, eventoId) 
-{ // Se agrega 'eventoId' como parámetro
-    const confirmDelete = confirm("¿Estás seguro de que deseas eliminar esta transacción?");
-    if (!confirmDelete) {
-        return; 
-    }
 
-    $.ajax({
-        url: 'eliminarTransaccion.php', 
-        type: 'POST',
-        data: {
-            id: transaccionId,
-            tipo: tipo,
-            registro_evento_id: eventoId // Pasar 'registro_evento_id' también
-        },
-        success: function(response) {
-            const result = JSON.parse(response);
-            if (result.success) {
-                alert("Transacción eliminada correctamente.");
-                cargarHistorial(eventoId); // Recargar el historial con el 'eventoId'
-            } else {
-                alert("Error al eliminar la transacción: " + result.error);
-            }
-        },
-        error: function() {
-            console.error('Error al conectar con el servidor para eliminar la transacción.');
-            alert('Error al conectar con el servidor.');
-        }
-    });
-}
+
+
 
                
               // GUARDAR ABONO DEL REGISTRO DEL SOCIO 
-              function guardarAbono(id) {
-                const porCobrar = parseFloat($('#porCobrar').val());
+           
+            function guardarAbono(id) {
                 const monto = parseFloat($('#monto').val());
                 const formaPago = $('#formaPago').val();
                 const fechaPago = $('#fechaPago').val();
-                const totalAnualidad = $('#abonoSection td:first').text().trim(); 
+                
+                const totalAnualidad = parseFloat($('#abonoSection td:first').text().trim());
             
-                $('#mensajeMonto').text(''); 
-            
-               
-                if (!porCobrar || !monto || !formaPago || !fechaPago) {
+                if (!monto || !formaPago || !fechaPago) {
                     Swal.fire('Error', 'Por favor, completa todos los campos.', 'warning');
+                    return;
+                }
+            
+                const porCobrarActual = parseFloat($('#porCobrar').val());
+                const nuevoPorCobrar = porCobrarActual - monto;
+            
+                if (nuevoPorCobrar < 0) {
+                    Swal.fire('Error', 'El monto del abono no puede ser mayor que el monto por cobrar.', 'warning');
                     return;
                 }
             
@@ -525,7 +513,7 @@ function eliminarTransaccion(transaccionId, tipo, eventoId)
                     data: {
                         id: id,
                         totalAnualidad: totalAnualidad,
-                        porCobrar: totalAnualidad - monto,
+                        porCobrar: nuevoPorCobrar,
                         monto: monto,
                         formaPago: formaPago,
                         fechaPago: fechaPago
@@ -536,13 +524,11 @@ function eliminarTransaccion(transaccionId, tipo, eventoId)
                             if (result.success) {
                                 $('#mensajeExito').text(result.message || 'El abono ha sido guardado correctamente.')
                                     .fadeIn().delay(2000).fadeOut();
-                    
-                                $('#porCobrar').val(result.nuevo_por_cobrar.toFixed(2));
-                                $('#monto').val(''); 
+            
+                                $('#porCobrar').val(nuevoPorCobrar.toFixed(2));
+                                $('#monto').val('');
                                 $('#formaPago').val('');
                                 $('#fechaPago').val('');
-                    
-                                $('#totalAnualidad').text(result.totalAnualidad);
                             } else {
                                 Swal.fire('Error', result.message || 'No se pudo guardar el abono.', 'error');
                             }
@@ -550,15 +536,30 @@ function eliminarTransaccion(transaccionId, tipo, eventoId)
                             Swal.fire('Error', 'Error al procesar la respuesta del servidor.', 'error');
                         }
                     },
-                    
-                    error: function() {
+                    error: function(jqXHR, textStatus, errorThrown) {
                         Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
                     }
                 });
             }
             
-            
-
+               
+            function cargarAbonosRegistros(id) {
+                $.get(`obtenerAbonosRegistros.php?registro_evento_id=${id}`, function(response) {
+                    const result = JSON.parse(response);
+                    
+                    if (result.error) {
+                        console.error('Error:', result.error);
+                    } else {
+                        const totalAnualidad = parseFloat($('#abonoSection td:first').text().trim());
+                        const porCobrar = parseFloat(result.porCobrar);
+                        
+                        $('#porCobrar').val(porCobrar || totalAnualidad);
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error en la solicitud AJAX:', textStatus, errorThrown);
+                });
+            }
+         
             function guardarCondonacion(id) {
                 const porCondonar = $('#porCondonar').val();
                 const fechaCondonacion = $('#fechaCondonacion').val();
@@ -593,16 +594,16 @@ function eliminarTransaccion(transaccionId, tipo, eventoId)
                     },
                     success: function(response) {
                         console.log('Respuesta del servidor:', response);
-                       
                         try {
                             const result = JSON.parse(response);
                             if (result.success) {
-                                // Mostrar mensaje de éxito fuera del modal
                                 $('#mensajeExito').text(result.message || 'La condonación ha sido guardada correctamente.')
-                                    .fadeIn().delay(2000).fadeOut(); // Mostrar y ocultar el mensaje
+                                    .fadeIn().delay(2000).fadeOut(); 
                                 
-                                // Limpiar los campos de entrada
-                                $('#porCondonar').val('');
+                               
+                                $('#porCondonar').val(result.nuevo_por_condonar.toFixed(2));
+            
+                                
                                 $('#fechaCondonacion').val('');
                                 $('#tipoCondonacion').val('');
                                 $('#montoCondonacion').val('');
@@ -620,8 +621,24 @@ function eliminarTransaccion(transaccionId, tipo, eventoId)
                     }
                 });
             }
+            
+            function cargarCondonacionesRegistros(id) {
+                $.get(`obtenerCondonacionesRegistros.php?registro_evento_id=${id}`, function(response) {
+                    const result = JSON.parse(response);
+                    
+                    if (result.error) {
+                        console.error('Error:', result.error);
+                    } else {
+                        const totalAnualidad = parseFloat($('#condonacionSection td:first').text().trim());
+                        const porCondonar = parseFloat(result.porCondonar);
+                        
+                        $('#porCondonar').val(porCondonar || totalAnualidad);
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error en la solicitud AJAX:', textStatus, errorThrown);
+                });
+            }    
 
-                
 function guardarComentario(id) {
     const comentarioDireccion = $('#comentarioDireccion').val().trim();
 
@@ -674,10 +691,45 @@ function guardarComentario(id) {
     });
 }
 
+///////////////// ELIMINAR TRANSACCION DEL REGISTRO DE SOCIO AL EVENTO
+function eliminarTransaccion(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar esta transacción?")) {
+        $.ajax({
+            url: 'eliminarTransaccionRegistro.php',
+            type: 'POST',
+            data: { id: id }, 
+            success: function(response) {
+                console.log('Respuesta del servidor:', response); 
+                try {
+                    let result = JSON.parse(response);
+                    if (result.success) {
+                        alert('Transacción eliminada correctamente');
+                        
+                        
+                        $(`#historialPagos tr:has(a[onclick*='eliminarTransaccion(${id})'])`).remove();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error al procesar la respuesta:', error);
+                    alert('Error en la respuesta del servidor: ' + response);
+                }
+            },
+            error: function() {
+                alert('Error en la solicitud');
+            }
+        });
+    }
+}
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //EDITAR SOCIO  
+
+
+
+
+
+////////////////////////////////////////////////////EDITAR SOCIO ////////////////////////////////////////////////////////////////////
+ 
     let totalAnualidad;
 function editarSocio(id) {
     $.ajax({
@@ -887,7 +939,10 @@ function cargarHistorial(socioId) {
                             <td>${transaccion.tipo}</td>
                             <td>${transaccion.usuario}</td>
                            <td>
-                                 <a href='#' onclick='eliminarTransaccion(" . $result['id'] . ");' class='btn btn-danger' title='eliminar'><i class='fas fa-trash-alt'></i></a>
+                                 <a href='#' onclick='eliminarTransaccionSocio(${transaccion.id});' class='btn btn-danger' title='Eliminar'> 
+                                    <i class='fas fa-trash-alt'></i>
+                                </a>
+                                
                             </td>
                         </tr>`;
                         tbody.append(row);
@@ -902,51 +957,30 @@ function cargarHistorial(socioId) {
         }
     });
 }
-          
-function eliminarTransaccion(transaccionId, tipo) {
-    const confirmDelete = confirm("¿Estás seguro de que deseas eliminar esta transacción?");
-    if (!confirmDelete) {
-        return; 
-    }
 
-    $.ajax({
-        url: 'eliminarTransaccion.php', 
-        type: 'POST',
-        data: {
-            id: transaccionId,
-            tipo: tipo 
-        },
-        success: function(response) {
-            const result = JSON.parse(response);
-            if (result.success) {
-                alert("Transacción eliminada correctamente.");
-                cargarHistorial(socioId); 
-            } else {
-                alert("Error al eliminar la transacción: " + result.error);
-            }
-        },
-        error: function() {
-            console.error('Error al conectar con el servidor para eliminar la transacción.');
-            alert('Error al conectar con el servidor.');
-        }
-    });
-}
+          
+
 
     // GUARDAR ABONO DEL SOCIO 
     function guardarAbono(id) {
         const monto = parseFloat($('#monto').val());
         const formaPago = $('#formaPago').val();
         const fechaPago = $('#fechaPago').val();
-        const totalAnualidad = $('#abonoSection td:first').text().trim();
+        
+        const totalAnualidad = parseFloat($('#abonoSection td:first').text().trim());
     
         if (!monto || !formaPago || !fechaPago) {
             Swal.fire('Error', 'Por favor, completa todos los campos.', 'warning');
             return;
         }
     
-        
         const porCobrarActual = parseFloat($('#porCobrar').val());
         const nuevoPorCobrar = porCobrarActual - monto;
+    
+        if (nuevoPorCobrar < 0) {
+            Swal.fire('Error', 'El monto del abono no puede ser mayor que el monto por cobrar.', 'warning');
+            return;
+        }
     
         $.ajax({
             url: 'guardarAbono.php',
@@ -963,8 +997,11 @@ function eliminarTransaccion(transaccionId, tipo) {
                 try {
                     const result = JSON.parse(response);
                     if (result.success) {
-                        $('#porCobrar').val(nuevoPorCobrar.toFixed(2)); 
-                        $('#monto').val(''); 
+                        $('#mensajeExito').text(result.message || 'El abono ha sido guardado correctamente.')
+                            .fadeIn().delay(2000).fadeOut();
+    
+                        $('#porCobrar').val(nuevoPorCobrar.toFixed(2));
+                        $('#monto').val('');
                         $('#formaPago').val('');
                         $('#fechaPago').val('');
                     } else {
@@ -974,12 +1011,12 @@ function eliminarTransaccion(transaccionId, tipo) {
                     Swal.fire('Error', 'Error al procesar la respuesta del servidor.', 'error');
                 }
             },
-            error: function() {
+            error: function(jqXHR, textStatus, errorThrown) {
                 Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
             }
         });
     }
-    
+       
     function cargarAbonos(id) {
         $.get(`obtenerAbonos.php?socio_id=${id}`, function(response) {
             const result = JSON.parse(response);
@@ -987,7 +1024,7 @@ function eliminarTransaccion(transaccionId, tipo) {
             if (result.error) {
                 console.error('Error:', result.error);
             } else {
-                const totalAnualidad = parseFloat($('#abonosSection td:first').text().trim());
+                const totalAnualidad = parseFloat($('#abonoSection td:first').text().trim());
                 const porCobrar = parseFloat(result.porCobrar);
                 
                 $('#porCobrar').val(porCobrar || totalAnualidad);
@@ -996,6 +1033,7 @@ function eliminarTransaccion(transaccionId, tipo) {
             console.error('Error en la solicitud AJAX:', textStatus, errorThrown);
         });
     }
+    
     
     function guardarCondonacion(id) {
         const totalAnualidad = parseFloat($('#condonacionSection td:first').text().trim());
@@ -1141,3 +1179,38 @@ function eliminarTransaccion(transaccionId, tipo) {
         
     });
 }
+
+/////////////////////////////////// ELIMINAR TRASACCION DEL SOCIO////////////////////////////////7
+
+function eliminarTransaccionSocio(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar esta transacción?")) {
+        $.ajax({
+            url: 'eliminarTransaccionSocio.php',
+            type: 'POST',
+            data: { id: id },
+            success: function(response) {
+                console.log('Respuesta del servidor:', response); 
+                try {
+                    let result = JSON.parse(response);
+                    if (result.success) {
+                        alert('Transacción eliminada correctamente');
+                        
+                        
+                        $(`#historialPagos tr:has(a[onclick*='eliminarTransaccionSocio(${id})'])`).remove();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error al procesar la respuesta:', error);
+                    alert('Error en la respuesta del servidor: ' + response);
+                }
+            },
+            error: function() {
+                alert('Error en la solicitud');
+            }
+        });
+    }
+}
+
+
+

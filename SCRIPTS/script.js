@@ -687,6 +687,7 @@ function guardarEvento() {
 }
 
 
+
 // document.addEventListener('DOMContentLoaded', function () {
 //     const gratisElement = document.getElementById('gratis');
 //     const nombreEventoElement = document.getElementById('nombre_evento');

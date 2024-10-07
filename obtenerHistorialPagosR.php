@@ -11,7 +11,7 @@ if ($registro_evento_id === null) {
 }
 
 
-$abonosQuery = "SELECT fecha_pago AS fecha, monto, forma_pago, 'Abono' AS tipo, creado_por AS usuario 
+$abonosQuery = "SELECT id, fecha_pago AS fecha, monto, forma_pago, 'Abono' AS tipo, creado_por AS usuario 
                 FROM abonos_eventos 
                 WHERE registro_evento_id = ?";
 $stmtAbonos = $conex->prepare($abonosQuery);
@@ -20,8 +20,7 @@ $stmtAbonos->execute();
 $resultAbonos = $stmtAbonos->get_result();
 $abonos = $resultAbonos->fetch_all(MYSQLI_ASSOC);
 
-
-$condonacionesQuery = "SELECT fecha_condonacion AS fecha, monto_condonacion AS monto, 'NULL' AS forma_pago, 'Condonación' AS tipo, creado_por AS usuario 
+$condonacionesQuery = "SELECT id, fecha_condonacion AS fecha, monto_condonacion AS monto, 'NULL' AS forma_pago, 'Condonación' AS tipo, creado_por AS usuario 
                        FROM condonaciones_eventos 
                        WHERE registro_evento_id = ?";
 $stmtCondonaciones = $conex->prepare($condonacionesQuery);

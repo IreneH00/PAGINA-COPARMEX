@@ -1,35 +1,31 @@
 <?php
+
 include 'conexion.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $id = $_GET['id'];
+if (isset($_POST['id'])) {
+    $id = $_POST['id'];
 
-    if (!empty($id)) {
-        $query = "SELECT precio_socio FROM eventos WHERE id = ?";
-        $stmt = $conex->prepare($query);
+    
+    $query = "SELECT r.id, r.nombre_evento, r.nombre, r.telefono, r.correo, r.pagado, e.precio_socio 
+              FROM registro_eventos_socios r
+              JOIN eventos e ON r.nombre_evento = e.nombre_evento 
+              WHERE r.id = ?";  
 
-        if ($stmt) {
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $data = $result->fetch_assoc();
+    if ($stmt = $conex->prepare($query)) {
+        $stmt->bind_param('i', $id); 
 
-            if ($data) {
-                echo json_encode($data);
-            } else {
-                echo json_encode(['error' => 'No se encontró el registro.']);
-            }
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            $stmt->close();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            
+            
+            echo json_encode($row);
         } else {
-            echo json_encode(['error' => 'Error en la preparación de la consulta.']);
+            echo json_encode(['error' => 'No se encontraron datos.']);
         }
-    } else {
-        echo json_encode(['error' => 'ID inválido.']);
+        $stmt->close();
     }
-
-    $conex->close();
-} else {
-    echo json_encode(['error' => 'Método de solicitud inválido.']);
 }
 ?>
