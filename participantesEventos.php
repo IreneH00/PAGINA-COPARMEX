@@ -71,6 +71,7 @@
                             <th></th>
                             <th>Activo/Inactivo</th>
                             <th>Pagado/Adeudo</th>
+                            <th>Descargar QR</th>
                         </tr>
                     </thead>
 
@@ -81,6 +82,8 @@
                             $pagado = $row['pagado'] == 1 ? '' : 'btn-red';
                             $gratuito = $gratis == 1;
 
+                            
+
                             echo "<tr>
                             <td>" . htmlspecialchars($row['id']) . "</td>
                             <td><span class='nombre $activoClass' id='nombre-" . $row['id'] . "'>" . htmlspecialchars($row['nombre']) . "</span></td>
@@ -88,6 +91,7 @@
                             <td><a href='#' onclick='eliminarParticipante(" . $row['id'] . ");' class='btn btn-danger' title='Eliminar'><i class='fas fa-trash-alt'></i></a></td>
                             <td><button onclick='toggleActivo(" . $row['id'] . ");' class='btn btn-secondary'>Activo/Inactivo</button></td>
                             <td><button onclick='togglePagado(" . $row['id'] . ");' class='btn btn-primary $pagado' " . ($gratuito ? 'disabled' : '') . ">Pagado/Adeudo</button></td>
+                           
                         </tr>";
                         }
                         ?>

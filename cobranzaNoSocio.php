@@ -59,7 +59,7 @@
 
     .left-container {
       flex: 1;
-      margin-right: 30px;
+      margin-right: 10px;
       padding: 20px;
       background-color: #f8f9fa;
       border: 1px solid #ddd;
@@ -278,13 +278,19 @@ table tr td.no-pagado {
     <li class="nav-item" role="presentation">
       <a class="nav-link rounded-5" href="sidebar.php" role="button"><i class="fa-solid fa-house"> Ir al Inicio</i></a>
     </li>
-
     <li class="nav-item" role="presentation">
       <button class="nav-link active rounded-5" id="cobranza-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza Socio</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link active rounded-5" id="cobranzanosocio-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza no socio</button>
     </li>
+
+   
+   
+
+
+      
+   
   </ul>
 
 <!-- TABLA DE REGISTRO DE SOCIOS A EVENTOS -->
@@ -305,19 +311,18 @@ table tr td.no-pagado {
                     </tr>
                 </thead>
                 <tbody>
-                <?php
+               <?php
 include 'conexion.php'; 
 
-$query = "SELECT r.id, r.nombre_evento, r.nombre, r.telefono, r.correo, r.pagado, e.precio_socio 
-          FROM registro_eventos_socios r
-          JOIN eventos e ON r.nombre_evento = e.nombre_evento 
-          WHERE r.tipo_usuario = 'socio'
-          ORDER BY r.id DESC";
+$query = "SELECT id, nombre_evento, nombre, telefono, correo, pagado, precio 
+          FROM registro_eventos_socios 
+          WHERE tipo_usuario != 'socio' 
+          ORDER BY id DESC";
 
 $resultado = $conex->query($query);
 
 while ($fila = $resultado->fetch_assoc()) {
-    
+
     $pagadoClass = $fila['pagado'] ? 'pagado' : 'no-pagado';
 
     echo "<tr>
@@ -326,7 +331,7 @@ while ($fila = $resultado->fetch_assoc()) {
             <td class='$pagadoClass'>" . $fila['nombre'] . "</td>
             <td class='$pagadoClass'>" . $fila['telefono'] . "</td>
             <td class='$pagadoClass'>" . $fila['correo'] . "</td>
-            <td class='$pagadoClass'>" . number_format($fila['precio_socio'], 2) . "</td>
+            <td class='$pagadoClass'>" . number_format($fila['precio'], 2) . "</td>
             <td class='$pagadoClass'>" . ($fila['pagado'] ? 'Sí' : 'No') . "</td>
             <td>
                 <a href='#' onclick='editarRegistro(" . $fila['id'] . ");' class='btn btn-warning btn-circle' title='editar'>
@@ -336,88 +341,26 @@ while ($fila = $resultado->fetch_assoc()) {
           </tr>";
 }
 ?>
-                
+
+
                 </tbody>
             </table>
       
-          <!-- TABLA DE SOCIOS -->
-<div class="table-responsive" id= "tablaSocios">
-    <table class="table table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Cuota</th>
-                <th>Nombre Comercial</th>
-                <th>Fecha Afiliación</th>
-                <th>Razón Social</th>
-                <th>Ejecutivo Afiliado</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php
-
-$query2 = "SELECT id, fechaAfiliacion, razonSocial, nombreComercial, cuota, ejecutivoAfilio 
-           FROM socios
-           ORDER BY id DESC";
-$resultado2 = $conex->query($query2);
-
-while ($fila2 = $resultado2->fetch_assoc()) {
-    echo "<tr>
-            <td>" . $fila2['id'] . "</td>
-            <td>" . $fila2['cuota'] . "</td>
-            <td>" . $fila2['nombreComercial'] . "</td>
-            <td>" . $fila2['fechaAfiliacion'] . "</td>
-            <td>" . $fila2['razonSocial'] . "</td>
-            <td>" . $fila2['ejecutivoAfilio'] . "</td>
-            <td>
-                <a href='#' onclick='editarSocio(" . $fila2['id'] . ");' class='btn btn-warning btn-circle' title='editar'>
-                    <i class='fa-solid fa-pencil'></i>
-                </a>
-                
-            </td>
-          </tr>";
-}
-?>
-
-        </tbody>
-    </table>
-</div>
+      
       </div>
     </div>
 
     
    
     <div class="right-container">
-   <a href="#" id="socios" class="btn btn-secondary btn-socios mb-2">Mis socios</a>
+   <a href="#" id="socios" class="btn btn-secondary btn-socios mb-2">Publico en general</a>
    <select id="estado" class="form-select mb-2">
-    <option value="">Seleccione un socio...</option>
+    <option value="">Seleccione una opcion...</option>
     <?php
         include 'conexion.php';
-
-      
-        $query = "SELECT id, nombreComercial FROM socios";
+        $query = "SELECT DISTINCT nombre FROM registro_eventos_socios WHERE tipo_usuario != 'socio'";
         $resultado = $conex->query($query);
-        
-      
-        if (!$resultado) {
-            die("Error en la consulta de socios: " . $conex->error);
-        }
-        
-       
-        while ($fila = $resultado->fetch_assoc()) {
-            echo "<option value='{$fila['id']}'>{$fila['nombreComercial']}</option>";
-        }
 
-        $query = "SELECT DISTINCT nombre FROM registro_eventos_socios WHERE tipo_usuario = 'socio'";
-        $resultado = $conex->query($query);
-        
-        
-        if (!$resultado) {
-            die("Error en la consulta de registro_eventos_socios: " . $conex->error);
-        }
-
-        
         while ($fila = $resultado->fetch_assoc()) {
             echo "<option value='{$fila['nombre']}'>{$fila['nombre']}</option>";
         }
@@ -425,6 +368,7 @@ while ($fila2 = $resultado2->fetch_assoc()) {
 </select>
  
 
+   
 
 
 
@@ -509,7 +453,12 @@ while ($fila2 = $resultado2->fetch_assoc()) {
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="SCRIPTS/cobranza.js"></script>
   <script>
- document.getElementById('cobranzanosocio-tab2').addEventListener('click', function() {
+ 
+ document.getElementById('cobranza-tab2').addEventListener('click', function() {
+        window.location.href = 'cobranza.php';
+    });
+
+    document.getElementById('cobranzanosocio-tab2').addEventListener('click', function() {
         window.location.href = 'cobranzaNoSocio.php';
     });
 

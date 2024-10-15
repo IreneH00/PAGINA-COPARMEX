@@ -1212,5 +1212,50 @@ function eliminarTransaccionSocio(id) {
     }
 }
 
+/////////////////////////////////////////////FUNCIONES PARA LA PESTAÑA COBRANZA NO SOCIO//////////////////////////
+
+$(document).ready(function () {
+    // FILTRAR POR SOCIO
+    $('#estado').change(function () {
+        const socioSeleccionado = $(this).val();
+        const paymentStatus = $('#paymentStatus').val(); 
+
+        $.ajax({
+            type: "POST",
+            url: "filtrarRegistrosNSocio.php", 
+            data: { socio_id: socioSeleccionado, payment_status: paymentStatus }, 
+            success: function (response) {
+                const data = JSON.parse(response);
+
+                $('#tablaRegistrosEventos tbody').html(data.eventos);
+                $('#tablaSocios tbody').html(data.socios);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud AJAX:", status, error); 
+            }
+        });
+    });
+
+    // FILTRAR POR ESTADO DE PAGO
+    $('#paymentStatus').change(function () {
+        const socioSeleccionado = $('#estado').val(); 
+        const paymentStatus = $(this).val(); 
+
+        $.ajax({
+            type: "POST",
+            url: "filtrarRegistrosNSocio.php", 
+            data: { socio_id: socioSeleccionado, payment_status: paymentStatus }, 
+            success: function (response) {
+                const data = JSON.parse(response);
+
+                $('#tablaRegistrosEventos tbody').html(data.eventos);
+                $('#tablaSocios tbody').html(data.socios);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud AJAX:", status, error); 
+            }
+        });
+    });
+});
 
 

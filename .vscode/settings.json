@@ -20,5 +20,6 @@
     ],
     "cSpell.enableFiletypes": [
         "php"
-    ]
+    ],
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }

@@ -119,6 +119,65 @@ if (!isset($_SESSION['loggedin'])) {
 
       
 
+
+        .mesa {
+    width: 80px;
+    height: 80px;
+    border: none; 
+    position: relative;
+    background-color: #cce5ff;
+    margin: auto;
+  }
+
+  .mesa-principal {
+    width: 200px; 
+    height: 40px;
+    border: none; 
+    position: relative;
+    background-color: #007bff; 
+    margin-top: 40px; 
+  }
+
+  .asiento, .asiento-principal {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
+  .asiento {
+    background-color: #6c757d;
+    cursor: pointer; 
+  }
+
+
+  .asiento-principal {
+    background-color: #6c757d;
+    color: white; 
+  }
+
+  .badge {
+    font-size: 10px;
+  }
+
+  .row {
+    justify-content: center;
+  }
+
+  .mesa-titulo, .mesa-principal-titulo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+  }
+   
+
     </style>
 </head>
 
@@ -197,94 +256,107 @@ if (!isset($_SESSION['loggedin'])) {
     </div>
 
     <div class="main-container">
-        <!-- Formulario -->
-        <form action="registro_evento.php" method="post" class="form-container">
-            <h3 style="color:blue;">PRE-REGISTRO</h3>
-            <div class="row">
-                <div class="col">
-                    <label for="nombre_evento">Evento:</label>
-                    <select class="form-select" id="nombre_evento" name="nombre_evento" required>
-                        <option value="">Seleccione un evento...</option>
-                        <?php
-                        include 'conexion.php';
-                        
-                        $query = "SELECT id, nombre_evento, precio_socio, precio_general, precio_estudiante, precio_prospecto, precio_cortesia, precio_no_activo, ubicacion, fecha, hora, gratis, activo FROM eventos WHERE activo = 0";
-                        $ejecutar = $conex->query($query);
-                        while ($result = $ejecutar->fetch_array()) {
-                            echo "<option value='" . $result["nombre_evento"] . "' data-gratis='" . $result["gratis"] . "' ";
-                            echo "precio_socio='" . $result["precio_socio"] . "' ";
-                            echo "precio_general='" . $result["precio_general"] . "' ";
-                            echo ">" . $result["nombre_evento"] . "</option>";
-                        }
-                        ?>
-                        
-                    </select>
-                </div>
-
-                <div class="col">
-                    <label for="nombre" class="form-label">Nombre completo:</label>
-                    <input type="text" class="form-control" name="nombre" id="nombre" required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="correo" class="form-label">Correo electrónico:</label>
-                    <input type="email" class="form-control" id="correo" name="correo" placeholder="nombre@ejemplo.com" required>
-                </div>
-                <div class="col">
-                    <label class="form-label" for="telefono">Teléfono:</label>
-                    <input type="tel" class="form-control" name="telefono" id="telefono">
-                </div>
-            </div>
-
-            <div class="row">
-    <div class="col">
-        <label for="nombre_empresa">Nombre de la empresa:</label>
-        <select class="form-select" id="nombre_empresa" name="nombre_empresa" required>
-    <option value="">Seleccione una empresa...</option>
+   <!-- Formulario -->
+<form action="registro_evento.php" method="post" class="form-container">
+    <h3 style="color:blue;">PRE-REGISTRO</h3>
+    <div class="row">
+        <div class="col">
+        <label for="nombre_evento">Evento:</label>
+<select class="form-select" id="nombre_evento" name="nombre_evento" required>
+    <option value="">Seleccione un evento...</option>
     <?php
-    include 'conexion.php'; 
+    include 'conexion.php';
 
-    $query = "SELECT nombreComercial FROM socios";
-    $result = $conex->query($query);
-
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            echo '<option value="' . $row['nombreComercial'] . '">' . $row['nombreComercial'] . '</option>';
-        }
-    } else {
-        echo '<option value="">Error al cargar empresas</option>';
+    $query = "SELECT id, nombre_evento, precio_socio, precio_general, precio_estudiante, precio_prospecto, precio_cortesia, precio_no_activo, ubicacion, fecha, hora, gratis, activo FROM eventos WHERE activo = 0";
+    $ejecutar = $conex->query($query);
+    while ($result = $ejecutar->fetch_array()) {
+        echo "<option value='" . $result["nombre_evento"] . "' data-id='" . $result["id"] . "' data-gratis='" . $result["gratis"] . "' ";
+        echo "precio_socio='" . $result["precio_socio"] . "' ";
+        echo "precio_general='" . $result["precio_general"] . "' ";
+        echo ">" . $result["nombre_evento"] . "</option>";
     }
     ?>
 </select>
 
+        </div>
+
+        <div class="col">
+            <label for="nombre" class="form-label">Nombre completo:</label>
+            <input type="text" class="form-control" name="nombre" id="nombre" required>
+        </div>
     </div>
-</div>
-<div class="row">
+    <div class="row">
+        <div class="col">
+            <label for="correo" class="form-label">Correo electrónico:</label>
+            <input type="email" class="form-control" id="correo" name="correo" placeholder="nombre@ejemplo.com" required>
+        </div>
+        <div class="col">
+            <label class="form-label" for="telefono">Teléfono:</label>
+            <input type="tel" class="form-control" name="telefono" id="telefono">
+        </div>
+    </div>
+
+    <!-- Tipo de usuario -->
+    <div class="row mt-3">
     <div class="col">
-        <label for="razon-social" class="form-label">Razón social:</label>
-        <input type="text" class="form-control" id="razon-social" name="razon-social" readonly>
+        <label for="tipo_usuario">Tipo de usuario:</label>
+        <select class="form-select" id="tipo_usuario" name="tipo_usuario" required onchange="mostrarEmpresa(this.value)">
+            <option value="">Seleccione un tipo de usuario...</option>
+            <option value="socio">Socio</option>
+            <option value="general">Usuario general</option>
+            <option value="estudiante">Estudiante</option>
+            <option value="prospecto">Prospecto</option>
+            <option value="cortesia">Cortesía</option>
+            <option value="noactivo">No activo</option>
+        </select>
     </div>
 </div>
-<div id="facturaForm" style="display: none;"></div>
 
 
-            <div class="row mt-3">
-    <div class="col text-end">
-        <button type="button" id="registrarBtn" class="btn btn-primary" onclick="registroEvento();">Registrar</button>
-        
+
+    <!-- Empresa y Razón Social  -->
+    <div class="row mt-3" id="empresaContainer" style="display: none;">
+        <div class="col">
+            <label for="nombre_empresa">Nombre de la empresa:</label>
+            <select class="form-select" id="nombre_empresa" name="nombre_empresa">
+                <option value="">Seleccione una empresa...</option>
+                <?php
+                include 'conexion.php'; 
+
+                $query = "SELECT nombreComercial FROM socios";
+                $result = $conex->query($query);
+
+                if ($result) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<option value="' . $row['nombreComercial'] . '">' . $row['nombreComercial'] . '</option>';
+                    }
+                } else {
+                    echo '<option value="">Error al cargar empresas</option>';
+                }
+                ?>
+            </select>
+        </div>
+        <div class="col">
+            <label for="razon-social" class="form-label">Razón social:</label>
+            <input type="text" class="form-control" id="razon-social" name="razon-social" readonly>
+        </div>
     </div>
-</div>
+
+    <div class="row mt-3">
+        <div class="col text-end">
+            <button type="button" id="registrarBtn" class="btn btn-primary" onclick="registroEvento();">Registrar</button>
+        </div>
+    </div>
+</form>
 
 
-            
-        </form>
 
-        <!-- Centro de Notificaciones -->
+
+        <!-- MAPA DE ASIENTOS -->
         <div class="notification-center">
             <div class="notification-header">
-                <h2>Notificaciones</h2>
-                <button id="clearAllBtn">Limpiar Todo</button>
+                <h2>MAPA DE ASIENTOS</h2>
+                
             </div>
             <div class="notification-list" id="notificationList">
               
@@ -299,102 +371,21 @@ if (!isset($_SESSION['loggedin'])) {
 
 
     <script>
-   
-   function registroEvento() {
-    var nombre_evento = $("#nombre_evento").val();
-    var nombre = $("#nombre").val();
-    var correo = $("#correo").val();
-    var telefono = $("#telefono").val();
+       
+       function mostrarEmpresa(tipoUsuario) {
     
-    var gratis = $("#nombre_evento option:selected").data("gratis");
-    var nombre_empresa = $("#nombre_empresa option:selected").text(); 
-
-    
-    if (!nombre_evento || !nombre || !correo || !telefono) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Campos incompletos',
-            text: 'Por favor, completa todos los campos antes de enviar el formulario.',
-        });
-        return; 
+    if (tipoUsuario === 'socio') {
+        $("#empresaContainer").show();
+    } else {
+        $("#empresaContainer").hide();
     }
 
-    var activo = 0; 
-
-    var data = {
-        nombre_evento: nombre_evento,
-        nombre: nombre,
-        correo: correo,
-        telefono: telefono,
-        activo: activo,
-        gratis: gratis
-    };
-
-    $.post("registro_evento.php", data)
-        .done(function(result) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Registro exitoso',
-                text: 'El evento ha sido registrado exitosamente.',
-                timer: 1500, 
-                showConfirmButton: false
-            });
-
-            var qrData = `Evento: ${nombre_evento}, Empresa: ${nombre_empresa}, Nombre: ${nombre}, Correo: ${correo}, `;
-
-            if (gratis === 1) {
-                qrData += 'Tipo: Gratis';
-            } else {
-                qrData += 'Estado: No Pagado';
-            }
-
-            setTimeout(function() {
-                
-                generateQRCode(qrData);
-            }, 1600);
-
-          
-            $("#nombre_evento").val("");
-            $("#nombre").val("");
-            $("#correo").val("");
-            $("#telefono").val("");
-        })
-        .fail(function() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al registrar el evento. Por favor, intente de nuevo.',
-            });
-        });
+   
+    $("#nombre_empresa").val(""); 
+    $("#razon-social").val(""); 
 }
 
-function generateQRCode(code) {
-    var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(code);
 
-    Swal.fire({
-        title: 'Código QR',
-        html: ` 
-            <div style="text-align:center;">
-                <img src="${qrUrl}" alt="Código QR" style="border-radius: 15px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
-                <p style="font-size: 16px; margin-top: 10px;">Escanea el QR para obtener los detalles del registro</p>
-            </div>
-        `,
-        customClass: {
-            popup: 'qr-popup-class'
-        },
-        width: 350,
-        padding: '20px',
-        showCloseButton: true,
-        showConfirmButton: false,
-        background: '#f5f5f5',
-        backdrop: `
-            rgba(0,0,123,0.4)
-            url("/images/nyan-cat.gif")
-            left top
-            no-repeat
-        `
-    });
-}
 
 
 //OBTENER RAZON SOCIAL
@@ -421,35 +412,331 @@ document.getElementById('nombre_empresa').addEventListener('change', function() 
     }
 });
 
+//EVENTOS
+ 
 
-//CENTRO DE NOTIFICACIONES 
-     
-const notificationList = document.getElementById('notificationList');
-    const connection = new WebSocket('ws://localhost:8080/notificaciones');
+$(document).ready(function() {
+    $("#nombre_evento").change(function() {
+        var nombreEvento = $(this).val();
+        
+        if (nombreEvento) {
+            var eventoId = $(this).find("option:selected").data("id");
 
-    connection.onopen = function () {
-        console.log('Conectado al servidor de notificaciones');
-    };
+            $.ajax({
+                url: "obtenerMapa.php",
+                type: "GET",
+                data: { id: eventoId }, 
+                success: function(data) {
+                    var mapa = JSON.parse(data);
+                    if (mapa.success) {
+                        dibujarMapa(mapa.mapas.num_mesas, mapa.mapas.asientos_por_mesa, mapa.mapas.asientos_mesa_principal,  mapa.asientos_ocupados);
+                    } else {
+                        $("#notificationList").html("<p>No se encontró mapa para este evento.</p>");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener el mapa:', error);
+                }
+            });
+        } else {
+            $("#notificationList").empty();
+        }
+    });
+});
 
-    connection.onmessage = function (event) {
-        addNotification(event.data);
-    };
+let selectedSeats = null;  
+let selectedMesa = null;   
+function dibujarMapa(numMesas, asientosPorMesa, asientosMesaPrincipal, asientosOcupados) {
+    const seatingMap = document.getElementById('notificationList');
+    seatingMap.innerHTML = ''; 
 
-    connection.onclose = function () {
-        console.log('Conexión cerrada');
-    };
+    const legend = document.createElement('div');
+    legend.innerHTML = `
+        <h5>Seleccione un asiento</h5>
+        <div class="mb-3">
+            <span style="display: inline-block; width: 15px; height: 15px; background-color: grey; border-radius: 50%; margin-right: 5px;"></span> Disponible 
+            <span style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-left: 15px; margin-right: 5px;"></span> Ocupado
+        </div>
+    `;
+    seatingMap.appendChild(legend);
 
-    function addNotification(message) {
-        const notificationItem = document.createElement('div');
-        notificationItem.className = 'notification-item';
-        notificationItem.textContent = message;
-        notificationList.appendChild(notificationItem);
+    const spacingDiv = document.createElement('div');
+    spacingDiv.style.height = '20px'; 
+    seatingMap.appendChild(spacingDiv);
+
+    const mesasContainer = document.createElement('div');
+    mesasContainer.classList.add('row', 'gy-4'); 
+
+   
+    function esAsientoOcupado(mesa, asiento) {
+        return asientosOcupados.some(a => a.num_mesa == mesa && a.num_asiento == asiento);
     }
 
+
+    for (let i = numMesas; i >= 1; i--) { 
+        const mesaCol = document.createElement('div');
+        mesaCol.classList.add('col-md-3');
+
+        const mesaDiv = document.createElement('div');
+        mesaDiv.classList.add('mesa', 'rounded-circle', 'position-relative', 'mx-auto');
+
+        const mesaTitulo = document.createElement('h6');
+        mesaTitulo.innerText = `Mesa ${i}`;
+        mesaTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle');
+        mesaDiv.appendChild(mesaTitulo);
+
+        const radio = 40;
+        for (let j = 1; j <= asientosPorMesa; j++) {
+            const asiento = document.createElement('span');
+            asiento.innerText = `${j}`;
+            asiento.classList.add('asiento', 'badge', 'position-absolute'); 
+
+            if (esAsientoOcupado(i, j)) {
+                asiento.style.backgroundColor = 'red';
+                asiento.style.cursor = 'not-allowed';
+                asiento.setAttribute('disabled', 'true');
+            } else {
+                asiento.style.backgroundColor = 'grey';
+
+                asiento.addEventListener('click', function() {
+                    if (asiento.style.backgroundColor === 'grey') {
+                        if (selectedSeats) {
+                            selectedSeats.style.backgroundColor = 'grey';  
+                        }
+                        asiento.style.backgroundColor = 'red';
+                        selectedSeats = asiento;
+                        selectedMesa = i; 
+                    } else {
+                        asiento.style.backgroundColor = 'grey';
+                        selectedSeats = null;
+                        selectedMesa = null;
+                    }
+                });
+            }
+
+            const angle = (360 / asientosPorMesa) * j;
+            const x = radio + (Math.cos(angle * Math.PI / 180) * radio);
+            const y = radio + (Math.sin(angle * Math.PI / 180) * radio);
+
+            asiento.style.left = `${x}px`;
+            asiento.style.top = `${y}px`;
+
+            mesaDiv.appendChild(asiento);
+        }
+
+        mesaCol.appendChild(mesaDiv);
+        mesasContainer.appendChild(mesaCol);
+    }
+
+    seatingMap.appendChild(mesasContainer);
+
     
+    const mesaPrincipalDiv = document.createElement('div');
+    mesaPrincipalDiv.classList.add('mesa', 'mesa-principal', 'position-relative', 'mx-auto', 'mt-5');
+
+    const mesaPrincipalTitulo = document.createElement('h6');
+    mesaPrincipalTitulo.innerText = `Mesa Principal (Mesa 0)`; 
+    mesaPrincipalTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle', 'text-white');
+    mesaPrincipalDiv.appendChild(mesaPrincipalTitulo);
+
+    const widthPrincipal = 200; 
+    const heightPrincipal = 40; 
+    mesaPrincipalDiv.style.width = `${widthPrincipal}px`;
+    mesaPrincipalDiv.style.height = `${heightPrincipal}px`;
+    mesaPrincipalDiv.style.backgroundColor = '#007bff'; 
+    mesaPrincipalDiv.style.border = 'none'; 
+
+    const totalAsientos = asientosMesaPrincipal; 
+    const half = Math.floor(totalAsientos / 2);
+
+    for (let k = 1; k <= totalAsientos; k++) {
+        const asientoPrincipal = document.createElement('span');
+        asientoPrincipal.innerText = `${k}`;
+        asientoPrincipal.classList.add('asiento', 'badge', 'position-absolute'); 
+
+        if (esAsientoOcupado(0, k)) {
+            asientoPrincipal.style.backgroundColor = 'red';
+            asientoPrincipal.style.cursor = 'not-allowed';
+            asientoPrincipal.setAttribute('disabled', 'true');
+        } else {
+            asientoPrincipal.style.backgroundColor = 'grey';
+
+            asientoPrincipal.addEventListener('click', function() {
+                if (asientoPrincipal.style.backgroundColor === 'grey') {
+                    if (selectedSeats) {
+                        selectedSeats.style.backgroundColor = 'grey';  
+                    }
+                    asientoPrincipal.style.backgroundColor = 'red';
+                    selectedSeats = asientoPrincipal;
+                    selectedMesa = 0; 
+                } else {
+                    asientoPrincipal.style.backgroundColor = 'grey';
+                    selectedSeats = null;
+                    selectedMesa = null;
+                }
+            });
+        }
+
+        const posX = (k <= half)
+            ? (k - 1) * (widthPrincipal / half) 
+            : (k - half - 1) * (widthPrincipal / half); 
+
+        let posY; 
+        if (k <= half) {
+            posY = -3; 
+        } else {
+            posY = heightPrincipal;
+        }
+
+        asientoPrincipal.style.left = `${posX}px`;
+        asientoPrincipal.style.top = `${posY}px`;
+
+        mesaPrincipalDiv.appendChild(asientoPrincipal);
+    }
+
+    seatingMap.appendChild(mesaPrincipalDiv);
+}
+
+
+
+
+
+
+function registroEvento() {
+    if (!$("#nombre_evento").length || !$("#nombre").length || !$("#correo").length || !$("#telefono").length || !$("#tipo_usuario").length) {
+        console.error("Un elemento del formulario no se encuentra.");
+        return;
+    }
+    
+    let nombre_evento = $("#nombre_evento").val();
+    let evento_id = $("#nombre_evento option:selected").data("id");
+    
+    let nombre = $("#nombre").val();
+    let correo = $("#correo").val();
+    let telefono = $("#telefono").val();
+    let gratis = $("#nombre_evento option:selected").data("gratis");
+    let tipo_usuario = $("#tipo_usuario").val();
+    let nombre_empresa = $("#nombre_empresa").val();
+    let razon_social = $("#razon-social").val();
+    
+    let no_asiento = selectedSeats ? selectedSeats.innerText : '';
+    let no_mesa = selectedMesa; 
+
+   
+    let eventoTieneMapa = no_mesa !== undefined && no_mesa !== null;
+
+    
+    if (!nombre_evento || !nombre || !correo || !telefono || !tipo_usuario || 
+        (eventoTieneMapa && !no_asiento)) {  
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: eventoTieneMapa ? 'Por favor, seleccione un asiento antes de enviar el formulario.' : 'Por favor, completa todos los campos antes de enviar el formulario.',
+        });
+        return;
+    }
+
+   
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(correo)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Correo inválido',
+            text: 'Por favor, ingrese un correo electrónico válido.',
+        });
+        return;
+    }
+
+   
+    let data = {
+        evento_id: evento_id, 
+        nombre_evento: nombre_evento, 
+        nombre: nombre,
+        correo: correo,
+        telefono: telefono,
+        activo: 0,
+        gratis: gratis,
+        tipo_usuario: tipo_usuario,
+        nombre_empresa: nombre_empresa,
+        razon_social: razon_social,
+        no_asiento: eventoTieneMapa ? no_asiento : '',  
+        no_mesa: eventoTieneMapa ? no_mesa : null  
+    };
+
+    // Enviar datos por AJAX
+    $.post("registro_evento.php", data)
+        .done(function(result) {
+            console.log(result);
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso',
+                text: 'El evento ha sido registrado exitosamente.',
+                timer: 1500, 
+                showConfirmButton: false
+            });
+
+            
+            $("input[type=text], input[type=email], input[type=tel], select").val("");
+
+            
+            var qrData = `Evento: ${nombre_evento}, Nombre: ${nombre}, Usuario: ${tipo_usuario}, Empresa: ${nombre_empresa}, Mesa: ${no_mesa}, Asiento: ${no_asiento}`;
+
+            if (gratis !== 1) {
+                qrData += ', Estado: No Pagado';
+            }
+
+            setTimeout(function() {
+                generateQRCode(qrData);
+            }, 1600);
+
+            // Reiniciar los campos del formulario
+            $("#nombre_evento").val("");
+            $("#nombre").val("");
+            $("#tipo_usuario").val("");
+            $("#nombre_empresa").val("");
+        })
+        .fail(function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al registrar el evento. Por favor, intente de nuevo.',
+            });
+        });
+}
+
+function generateQRCode(code) {
+    var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(code);
 
   
+    $.post("guardar_qr.php", { qrUrl: qrUrl })
+        .done(function(response) {
+            Swal.fire({
+    title: 'Código QR',
+    html: ` 
+        <div style="text-align:center;">
+            <img src="${qrUrl}" alt="Código QR" style="border-radius: 15px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
+            <p style="font-size: 16px; margin-top: 10px;">Escanea el QR para obtener los detalles del registro</p>
+        </div>
+    `,
+    customClass: {
+        popup: 'qr-popup-class'
+    },
+    width: 350,
+    padding: '20px',
+    showCloseButton: true,
+    showConfirmButton: false,
+    background: '#f5f5f5',
+});
 
+        })
+        .fail(function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo guardar la imagen del código QR en el servidor.',
+            });
+        });
+}
 
 
     </script>

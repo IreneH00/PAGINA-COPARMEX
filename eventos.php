@@ -53,19 +53,25 @@
       right: 0;
       bottom: 0%;
     }
-    
-  .mesa, .mesa-principal {
-    width: 100px;
-    height: 100px;
-    border: 2px solid #007bff;
+  
+
+
+    .mesa {
+    width: 80px;
+    height: 80px;
+    border: none; 
     position: relative;
-    background-color: #f8f9fa;
+    background-color: #cce5ff;
+    margin: auto;
   }
 
   .mesa-principal {
-    width: 150px;
-    height: 150px;
-    border-color: #28a745;
+    width: 200px; 
+    height: 40px;
+    border: none; 
+    position: relative;
+    background-color: #007bff; 
+    margin-top: 40px; 
   }
 
   .asiento, .asiento-principal {
@@ -75,7 +81,6 @@
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    color: white;
     position: absolute;
     transform: translate(-50%, -50%);
   }
@@ -85,11 +90,12 @@
   }
 
   .asiento-principal {
-    background-color: #28a745;
+    background-color: #6c757d;
+    color: white; 
   }
 
   .badge {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .row {
@@ -102,12 +108,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    color: white;
   }
-
-
-
-
-    
+   
+   
   </style>
 
 </head>
@@ -177,7 +181,7 @@
       <div class="row">
 
       <div class="col">
-  <select class="form-select" id="categoria" name="categoria" aria-label="categoria">
+      <select class="form-select" id="categoria_id" name="categoria" aria-label="categoria">
     <option selected>Selecciona una categoría</option>
     <?php
     include 'conexion.php';
@@ -186,14 +190,15 @@
     if ($result->num_rows > 0) {
       while ($row = $result->fetch_assoc()) {
     ?>
-        <option value="<?php echo $row['nombre']; ?>"><?php echo $row['nombre']; ?></option>
+        <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']; ?></option>
     <?php
       }
     } else {
       echo "<option value=''>No hay categorías disponibles</option>";
     }
     ?>
-  </select>
+</select>
+
 
         </div>
 
@@ -239,25 +244,30 @@
 
 <!-------------------SEGUNDO MODAL PARA GENERAR EL MAPA------------------------------>
 <div class="modal fade" id="mapaModal" tabindex="-1" aria-labelledby="mapaModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-secondary text-white">
+      <div class="modal-header" style="background-color: #007bff; color: white;">
         <h5 class="modal-title w-100 text-center" id="mapaModalLabel">Mapa de Asientos</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
       </div>
       <div class="modal-body">
-        
-        <div id="seatingMap">
-          <p>El mapa de asientos aparecerá aquí...</p>
+        <div class="container">
+          <div id="seatingMap">
+            <p class="text-muted" style="font-size: 14px;">El mapa de asientos aparecerá a continuación...</p>
+          </div>
         </div>
       </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">GuardarMapa</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">Cancelar</button>
+        <button type="button" class="btn btn-primary" style="background-color: #007bff; border-radius: 10px;" onclick="guardarMapa()">Guardar Mapa</button>
       </div>
     </div>
   </div>
 </div>
+
+
+
+<!-- CONTINUACION DEL FORM-->
 
 
         <div class="col">
@@ -406,7 +416,9 @@
       </div>
 
       <div class="d-grid gap-2">
-        <input type="submit" class="btn-custom" onclick="guardarEvento()" value="💾 Guardar">
+        
+        <input type="button" class="btn-custom" onclick="guardarEvento()" value="💾 Guardar">
+
         
       </div>
 
@@ -482,7 +494,7 @@
     var nombre_evento = $("#nombre_evento").val();
     var tipo = $("#tipo").val();
     var modo = $("#modo").val();
-    var categoria = $("#categoria").val();
+    var categoria = $("#categoria_id option:selected").text();
     var ubicacion = $("#ubicacion").val();
     var fecha = $("#fecha").val();
     var hora = $("#hora").val();
@@ -498,54 +510,53 @@
     var comentario = $("#comentario").val();
     var archivo = $("#archivo").val();
 
-
     console.log({
-    nombre_evento,
-    tipo,
-    modo,
-    categoria,
-    ubicacion,
-    fecha,
-    hora,
-    gratis,
-    precio_socio,
-    precio_general,
-    precio_estudiante,
-    precio_prospecto,
-    precio_cortesia,
-    precio_no_activo,
-    ponente,
-    link_zoom,
-    comentario,
-    archivo
-});
+        nombre_evento,
+        tipo,
+        modo,
+        categoria, 
+        ubicacion,
+        fecha,
+        hora,
+        gratis,
+        precio_socio,
+        precio_general,
+        precio_estudiante,
+        precio_prospecto,
+        precio_cortesia,
+        precio_no_activo,
+        ponente,
+        link_zoom,
+        comentario,
+        archivo
+    });
 
     $.post(
         "registrarEvento.php", {
-        nombre_evento: nombre_evento,
-        tipo: tipo,
-        modo: modo,
-        categoria: categoria,
-        ubicacion: ubicacion,
-        fecha: fecha,
-        hora: hora,
-        gratis: gratis,
-        precio_socio: precio_socio,
-        precio_general: precio_general,
-        precio_estudiante: precio_estudiante,
-        precio_prospecto: precio_prospecto,
-        precio_cortesia: precio_cortesia,
-        precio_no_activo: precio_no_activo,
-        ponente: ponente,
-        link_zoom: link_zoom,
-        comentario: comentario,
-        archivo: archivo,
-    },
+            nombre_evento: nombre_evento,
+            tipo: tipo,
+            modo: modo,
+            categoria: categoria,  
+            ubicacion: ubicacion,
+            fecha: fecha,
+            hora: hora,
+            gratis: gratis,
+            precio_socio: precio_socio,
+            precio_general: precio_general,
+            precio_estudiante: precio_estudiante,
+            precio_prospecto: precio_prospecto,
+            precio_cortesia: precio_cortesia,
+            precio_no_activo: precio_no_activo,
+            ponente: ponente,
+            link_zoom: link_zoom,
+            comentario: comentario,
+            archivo: archivo,
+        },
         function (result) {
             $("#nombre_evento").val("");
             $("#tipo").val("");
             $("#modo").val("");
-            $("#categoria").val("");
+            $("#categoria_id").val("");  
             $("#ubicacion").val("");
             $("#fecha").val("");
             $("#hora").val("");
@@ -572,17 +583,34 @@
     );
 }
 
-// MAPA DE ASIENTOS
-document.getElementById('categoria').addEventListener('change', function() {
-    if (this.value === 'DESAYUNO EMPRESARIAL') {
-      var myModal = new bootstrap.Modal(document.getElementById('desayunoModal'));
-      myModal.show();
-    }
-  });
+// MOSTRAR EL MODAL CUANDO LA CATEGORIA DEL EVENTO SEA IGUAL A DESAYUNO EMPRESARIAL
+document.getElementById('categoria_id').addEventListener('change', function() {
+    
+    var categoriaId = this.value;
 
-  
-  
-  function abrirMapa() {
+    
+    if (categoriaId) {
+       
+        fetch(`obtenerCategoria.php?id=${categoriaId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.nombre === 'DESAYUNO EMPRESARIAL') {
+                        var myModal = new bootstrap.Modal(document.getElementById('desayunoModal'));
+                        myModal.show();
+                    }
+                } else {
+                    console.error('Error al obtener el nombre de la categoría:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+            });
+    }
+});
+
+ //GENERAR EL MAPA DE ASIENTOS DEL EVENTO  
+function abrirMapa() {
     const numMesas = document.getElementById('numMesas').value;
     const asientosPorMesa = document.getElementById('asientosPorMesa').value;
     const asientosMesaPrincipal = document.getElementById('asientosMesaPrincipal').value;
@@ -590,89 +618,161 @@ document.getElementById('categoria').addEventListener('change', function() {
     const seatingMap = document.getElementById('seatingMap');
     seatingMap.innerHTML = ''; 
 
-    
     const mesasContainer = document.createElement('div');
     mesasContainer.classList.add('row', 'gy-4'); 
 
     
-    for (let i = 1; i <= numMesas; i++) {
-     
-      const mesaCol = document.createElement('div');
-      mesaCol.classList.add('col-md-6'); 
+    for (let i = numMesas; i >= 1; i--) { 
+        const mesaCol = document.createElement('div');
+        mesaCol.classList.add('col-md-3'); 
 
-      const mesaDiv = document.createElement('div');
-      mesaDiv.classList.add('mesa', 'rounded-circle', 'position-relative', 'mx-auto');
-      
-      const mesaTitulo = document.createElement('h6');
-      mesaTitulo.innerText = `Mesa ${i}`;
-      mesaTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle');
-      mesaDiv.appendChild(mesaTitulo);
+        const mesaDiv = document.createElement('div');
+        mesaDiv.classList.add('mesa', 'rounded-circle', 'position-relative', 'mx-auto');
 
-      
-      const radio = 50; 
-      for (let j = 1; j <= asientosPorMesa; j++) {
-        const asiento = document.createElement('span');
-        asiento.innerText = `${j}`;
-        asiento.classList.add('asiento', 'badge', 'bg-secondary', 'position-absolute');
-        
-        
-        const angle = (360 / asientosPorMesa) * j;
-        const x = radio + (Math.cos(angle * Math.PI / 180) * radio);
-        const y = radio + (Math.sin(angle * Math.PI / 180) * radio);
-        
-        asiento.style.left = `${x}px`;
-        asiento.style.top = `${y}px`;
-        
-        mesaDiv.appendChild(asiento);
-      }
+        const mesaTitulo = document.createElement('h6');
+        mesaTitulo.innerText = `Mesa ${i}`;
+        mesaTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle');
+        mesaDiv.appendChild(mesaTitulo);
 
-      
-      mesaCol.appendChild(mesaDiv);
-      mesasContainer.appendChild(mesaCol);
+        const radio = 40; 
+        for (let j = 1; j <= asientosPorMesa; j++) {
+            const asiento = document.createElement('span');
+            asiento.innerText = `${j}`;
+            asiento.classList.add('asiento', 'badge', 'bg-secondary', 'position-absolute');
+
+            const angle = (360 / asientosPorMesa) * j;
+            const x = radio + (Math.cos(angle * Math.PI / 180) * radio);
+            const y = radio + (Math.sin(angle * Math.PI / 180) * radio);
+
+            asiento.style.left = `${x}px`;
+            asiento.style.top = `${y}px`;
+
+            mesaDiv.appendChild(asiento);
+        }
+
+        mesaCol.appendChild(mesaDiv);
+        mesasContainer.appendChild(mesaCol);
     }
 
-    
     seatingMap.appendChild(mesasContainer);
 
-    
     const mesaPrincipalDiv = document.createElement('div');
-    mesaPrincipalDiv.classList.add('mesa-principal', 'rounded-circle', 'position-relative', 'mx-auto', 'mt-4');
-    
+    mesaPrincipalDiv.classList.add('mesa', 'mesa-principal', 'position-relative', 'mx-auto', 'mt-5');
+
     const mesaPrincipalTitulo = document.createElement('h6');
     mesaPrincipalTitulo.innerText = `Mesa Principal`;
-    mesaPrincipalTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle');
+    mesaPrincipalTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle', 'text-white');
     mesaPrincipalDiv.appendChild(mesaPrincipalTitulo);
 
-    const radioPrincipal = 90;
-    for (let k = 1; k <= asientosMesaPrincipal; k++) {
-      const asientoPrincipal = document.createElement('span');
-      asientoPrincipal.innerText = `${k}`;
-      asientoPrincipal.classList.add('asiento-principal', 'badge', 'bg-success', 'position-absolute');
-      
-     
-      const anglePrincipal = (360 / asientosMesaPrincipal) * k;
-      const x = radioPrincipal + (Math.cos(anglePrincipal * Math.PI / 180) * radioPrincipal);
-      const y = radioPrincipal + (Math.sin(anglePrincipal * Math.PI / 180) * radioPrincipal);
+    const widthPrincipal = 200; 
+    const heightPrincipal = 40; 
+    mesaPrincipalDiv.style.width = `${widthPrincipal}px`;
+    mesaPrincipalDiv.style.height = `${heightPrincipal}px`;
+    mesaPrincipalDiv.style.backgroundColor = '#007bff'; 
+    mesaPrincipalDiv.style.border = 'none'; 
 
-      asientoPrincipal.style.left = `${x}px`;
-      asientoPrincipal.style.top = `${y}px`;
+    const totalAsientos = asientosMesaPrincipal; 
+    const half = Math.floor(totalAsientos / 2);
 
-      mesaPrincipalDiv.appendChild(asientoPrincipal);
+    for (let k = 1; k <= totalAsientos; k++) {
+        const asientoPrincipal = document.createElement('span');
+        asientoPrincipal.innerText = `${k}`;
+        asientoPrincipal.classList.add('asiento', 'badge', 'bg-secondary', 'position-absolute');
+
+        const posX = (k <= half)
+            ? (k - 1) * (widthPrincipal / half)
+            : (k - half - 1) * (widthPrincipal / half); 
+
+        let posY; 
+        if (k <= half) {
+            posY = -3;
+        } else {
+            posY = heightPrincipal;
+        }
+
+        asientoPrincipal.style.left = `${posX}px`;
+        asientoPrincipal.style.top = `${posY}px`;
+
+        mesaPrincipalDiv.appendChild(asientoPrincipal);
     }
 
     seatingMap.appendChild(mesaPrincipalDiv);
 
-    
     var mapaModal = new bootstrap.Modal(document.getElementById('mapaModal'));
     mapaModal.show();
 
-    
     var desayunoModal = bootstrap.Modal.getInstance(document.getElementById('desayunoModal'));
     desayunoModal.hide();
-  }
+}
 
+//GUARDAR EL MAPA GENERADO 
+function guardarMapa() {
+    var categoria_id = $("#categoria_id").val();
+    var num_mesas = $("#numMesas").val();
+    var asientos_por_mesa = $("#asientosPorMesa").val();
+    var asientos_mesa_principal = $("#asientosMesaPrincipal").val();
 
+    var datos = {
+        categoria_id: categoria_id,
+        num_mesas: num_mesas,
+        asientos_por_mesa: asientos_por_mesa,
+        asientos_mesa_principal: asientos_mesa_principal,
+        detalles: '' 
+    };
 
+    $.ajax({
+        url: "guardarMapas.php",
+        type: "POST",
+        contentType: "application/json",  
+        data: JSON.stringify(datos),     
+        success: function(result) {
+            console.log(result);  
+
+            try {
+                var response = JSON.parse(result);
+            } catch (e) {
+                console.error('Error al parsear JSON: ', e);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al guardar',
+                    text: 'Respuesta inválida del servidor',
+                });
+                return;
+            }
+
+            if (response.success) {
+              
+                $("#numMesas").val("");
+                $("#asientosPorMesa").val("");
+                $("#asientosMesaPrincipal").val("");
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Mapa guardado!',
+                    text: 'El mapa de asientos ha sido guardado exitosamente.',
+                }).then(function () {
+                    var mapaModal = bootstrap.Modal.getInstance(document.getElementById('mapaModal'));
+                    mapaModal.hide();
+             
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al guardar',
+                    text: 'No se pudo guardar el mapa: ' + response.error,
+                });
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error de comunicación con el servidor: ', errorThrown);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al guardar',
+                text: 'Ha ocurrido un error al intentar guardar el mapa. Por favor, inténtelo de nuevo.',
+            });
+        }
+    });
+}
 
 
 
