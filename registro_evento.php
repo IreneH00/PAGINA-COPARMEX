@@ -66,9 +66,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ssssiisssiss", $nombre_evento, $nombre, $correo, $telefono, $activo, $pagado, $tipo_usuario, $nombre_empresa, $razon_social, $precio, $no_mesa, $no_asiento);
 
     if ($stmt->execute()) {
-        echo json_encode(["mensaje" => "Registro exitoso", "precio" => $precio]);
+    
+        $registro_id = $stmt->insert_id;
 
+       
+        $qrData = "Evento: $nombre_evento, Nombre: $nombre, Usuario: $tipo_usuario, Empresa: $nombre_empresa, Mesa: $no_mesa, Asiento: $no_asiento";
+        
       
+    if ($gratis !== 1) {
+        $qrData .= ', Estado: No Pagado';
+    }
+
+        $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" . urlencode($qrData);
+
+       
+        $rutaGuardado = 'qrs/';
+        $nombreArchivo = uniqid('qr_') . '.png';
+        $rutaCompleta = $rutaGuardado . $nombreArchivo;
+
+        $imagenQR = file_get_contents($qrUrl);
+
+        if ($imagenQR) {
+            file_put_contents($rutaCompleta, $imagenQR);
+
+         
+            $update_qr_query = "UPDATE registro_eventos_socios SET qr_code_path = ? WHERE id = ?";
+            $stmt_update_qr = $conex->prepare($update_qr_query);
+            $stmt_update_qr->bind_param('si', $rutaCompleta, $registro_id);
+
+            if ($stmt_update_qr->execute()) {
+                echo json_encode(["mensaje" => "Registro exitoso y QR generado", "precio" => $precio, "qr_path" => $rutaCompleta]);
+            } else {
+                echo json_encode(["error" => "Error al actualizar el QR en la base de datos: " . $stmt_update_qr->error]);
+            }
+
+            $stmt_update_qr->close();
+        } else {
+            echo json_encode(["error" => "Error al generar el código QR."]);
+        }
+
+        
         $query_ocupar_asiento = "INSERT INTO asientos_ocupados (evento_id, num_mesa, num_asiento) VALUES (?, ?, ?)";
         $stmt_ocupar_asiento = $conex->prepare($query_ocupar_asiento);
         $stmt_ocupar_asiento->bind_param("iii", $evento_id, $no_mesa, $no_asiento);
@@ -78,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             echo json_encode(["error" => "Error al registrar el asiento ocupado: " . $stmt_ocupar_asiento->error]);
         }
+
         $stmt_ocupar_asiento->close();
 
     } else {

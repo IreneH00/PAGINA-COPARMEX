@@ -279,7 +279,7 @@ table tr td.no-pagado {
       <a class="nav-link rounded-5" href="sidebar.php" role="button"><i class="fa-solid fa-house"> Ir al Inicio</i></a>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link active rounded-5" id="cobranza-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza Socio</button>
+      <button class="nav-link rounded-5" id="cobranza-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza Socio</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link active rounded-5" id="cobranzanosocio-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza no socio</button>
@@ -293,7 +293,7 @@ table tr td.no-pagado {
    
   </ul>
 
-<!-- TABLA DE REGISTRO DE SOCIOS A EVENTOS -->
+<!-- TABLA DE REGISTRO DE USUARIOS A EVENTOS -->
 <div class="container">
     <div class="left-container">
         <div class="table-responsive" id="tablaRegistrosEventos">
@@ -314,10 +314,11 @@ table tr td.no-pagado {
                <?php
 include 'conexion.php'; 
 
-$query = "SELECT id, nombre_evento, nombre, telefono, correo, pagado, precio 
-          FROM registro_eventos_socios 
-          WHERE tipo_usuario != 'socio' 
-          ORDER BY id DESC";
+$query = "SELECT id, nombre_evento, nombre, telefono, correo, precio, pagado 
+                          FROM registro_eventos_socios r
+                          WHERE tipo_usuario != 'socio' 
+                          ORDER BY id DESC";
+
 
 $resultado = $conex->query($query);
 
@@ -353,7 +354,7 @@ while ($fila = $resultado->fetch_assoc()) {
     
    
     <div class="right-container">
-   <a href="#" id="socios" class="btn btn-secondary btn-socios mb-2">Publico en general</a>
+   <a href="#" id="nosocios" class="btn btn-secondary btn-socios mb-2">Publico en general</a>
    <select id="estado" class="form-select mb-2">
     <option value="">Seleccione una opcion...</option>
     <?php
@@ -377,8 +378,8 @@ while ($fila = $resultado->fetch_assoc()) {
 
 <select id="paymentStatus" class="form-select mb-2">
     <option value="">Selecciona una opción...</option>
-    <option value="pagados">Pagados</option>
-    <option value="por_pagar">Por Pagar</option>
+    <option value="pagado">Pagado</option>
+    <option value="no_pagado">No pagado</option>
 </select>
 
 
@@ -451,7 +452,7 @@ while ($fila = $resultado->fetch_assoc()) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="SCRIPTS/cobranza.js"></script>
+  <script src="SCRIPTS/cobranzaNSocio.js"></script>
   <script>
  
  document.getElementById('cobranza-tab2').addEventListener('click', function() {
@@ -472,15 +473,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById('estado').addEventListener('change', function() {
-    const socioId = this.value;
+    const registroEventoId = this.value;
 
-    if (socioId) {
-        fetch('gestionPrecios.php', {
+    if (registroEventoId) {
+        fetch('gestionPreciosNS.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `socio_id=${socioId}`
+            body: `registro_evento_id=${registroEventoId}`
         })
         .then(response => response.json())
         .then(data => {
@@ -496,7 +497,7 @@ document.getElementById('estado').addEventListener('change', function() {
         })
         .catch(error => console.error('Error:', error));
     } else {
-        
+        // Reiniciar los valores si no se selecciona un registro_evento_id
         document.getElementById('total_inicial').innerText = `$0.00`;
         document.getElementById('total_pagado').innerText = `$0.00`;
         document.getElementById('total_condonado').innerText = `$0.00`;

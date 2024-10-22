@@ -6,10 +6,11 @@ if (isset($_POST['id'])) {
     $id = $_POST['id'];
 
     
-    $query = "SELECT r.id, r.nombre_evento, r.nombre, r.telefono, r.correo, r.pagado, e.precio_socio 
-              FROM registro_eventos_socios r
-              JOIN eventos e ON r.nombre_evento = e.nombre_evento 
-              WHERE r.id = ?";  
+    $query = "SELECT r.id, r.nombre_evento, r.nombre, r.telefono, r.correo, r.pagado, r.precio 
+    FROM registro_eventos_socios r
+    WHERE r.id = ?";  
+    
+   
 
     if ($stmt = $conex->prepare($query)) {
         $stmt->bind_param('i', $id); 

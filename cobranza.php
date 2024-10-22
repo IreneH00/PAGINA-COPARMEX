@@ -283,7 +283,7 @@ table tr td.no-pagado {
       <button class="nav-link active rounded-5" id="cobranza-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza Socio</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link active rounded-5" id="cobranzanosocio-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza no socio</button>
+      <button class="nav-link rounded-5" id="cobranzanosocio-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Cobranza no socio</button>
     </li>
   </ul>
 
@@ -308,32 +308,33 @@ table tr td.no-pagado {
                 <?php
 include 'conexion.php'; 
 
-$query = "SELECT r.id, r.nombre_evento, r.nombre, r.telefono, r.correo, r.pagado, e.precio_socio 
-          FROM registro_eventos_socios r
-          JOIN eventos e ON r.nombre_evento = e.nombre_evento 
-          WHERE r.tipo_usuario = 'socio'
-          ORDER BY r.id DESC";
-
+$query = "SELECT id, nombre_evento, nombre, telefono, correo, precio, pagado 
+                          FROM registro_eventos_socios r
+                          WHERE r.tipo_usuario = 'socio'
+                          ORDER BY id DESC";
 $resultado = $conex->query($query);
 
 while ($fila = $resultado->fetch_assoc()) {
+  
     
     $pagadoClass = $fila['pagado'] ? 'pagado' : 'no-pagado';
 
+    
     echo "<tr>
-            <td class='$pagadoClass'>" . $fila['id'] . "</td>
-            <td class='$pagadoClass'>" . $fila['nombre_evento'] . "</td>
-            <td class='$pagadoClass'>" . $fila['nombre'] . "</td>
-            <td class='$pagadoClass'>" . $fila['telefono'] . "</td>
-            <td class='$pagadoClass'>" . $fila['correo'] . "</td>
-            <td class='$pagadoClass'>" . number_format($fila['precio_socio'], 2) . "</td>
-            <td class='$pagadoClass'>" . ($fila['pagado'] ? 'Sí' : 'No') . "</td>
-            <td>
-                <a href='#' onclick='editarRegistro(" . $fila['id'] . ");' class='btn btn-warning btn-circle' title='editar'>
-                    <i class='fa-solid fa-pencil'></i>
-                </a>
-            </td>
-          </tr>";
+    <td class='$pagadoClass'>" . $fila['id'] . "</td>
+    <td class='$pagadoClass'>" . htmlspecialchars($fila['nombre_evento']) . "</td>
+    <td class='$pagadoClass'>" . htmlspecialchars($fila['nombre']) . "</td>
+    <td class='$pagadoClass'>" . htmlspecialchars($fila['telefono']) . "</td>
+    <td class='$pagadoClass'>" . htmlspecialchars($fila['correo']) . "</td>
+    <td class='$pagadoClass'>" . number_format($fila['precio'], 2) . "</td>
+    <td class='$pagadoClass'>" . ($fila['pagado'] ? 'Sí' : 'No') . "</td>
+    <td>
+        <a href='#' onclick='editarRegistro(" . $fila['id'] . ");' class='btn btn-warning btn-circle' title='editar'>
+            <i class='fa-solid fa-pencil'></i>
+        </a>
+    </td>
+  </tr>";
+
 }
 ?>
                 
@@ -433,10 +434,9 @@ while ($fila2 = $resultado2->fetch_assoc()) {
 
 <select id="paymentStatus" class="form-select mb-2">
     <option value="">Selecciona una opción...</option>
-    <option value="pagados">Pagados</option>
-    <option value="por_pagar">Por Pagar</option>
+    <option value="pagado">Pagado</option>
+    <option value="no_pagado">No pagado</option>
 </select>
-
 
       <div class="button-group">
         <a href="#" id="historialBtn" class="btn btn-secondary btn-historial mb-2">Historial</a>
@@ -508,6 +508,8 @@ while ($fila2 = $resultado2->fetch_assoc()) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="SCRIPTS/cobranza.js"></script>
+  
+
   <script>
  document.getElementById('cobranzanosocio-tab2').addEventListener('click', function() {
         window.location.href = 'cobranzaNoSocio.php';

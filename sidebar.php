@@ -177,6 +177,21 @@ if (!isset($_SESSION['loggedin'])) {
     color: white;
   }
    
+  .clear-map-button {
+        background-color: transparent; 
+        color: white;
+        border: none; 
+        font-size: 16px;
+        cursor: pointer; 
+        text-decoration: none; 
+        border-bottom: 2px solid transparent; 
+        transition: all 0.3s ease;
+        margin-top: 10px; 
+    }
+
+    .clear-map-button:hover {
+        border-bottom: 2px solid #eef5f4;
+    }
 
     </style>
 </head>
@@ -356,7 +371,7 @@ if (!isset($_SESSION['loggedin'])) {
         <div class="notification-center">
             <div class="notification-header">
                 <h2>MAPA DE ASIENTOS</h2>
-                
+              
             </div>
             <div class="notification-list" id="notificationList">
               
@@ -414,6 +429,7 @@ document.getElementById('nombre_empresa').addEventListener('change', function() 
 
 //EVENTOS
  
+let eventoTieneMapa = false; 
 
 $(document).ready(function() {
     $("#nombre_evento").change(function() {
@@ -429,8 +445,10 @@ $(document).ready(function() {
                 success: function(data) {
                     var mapa = JSON.parse(data);
                     if (mapa.success) {
-                        dibujarMapa(mapa.mapas.num_mesas, mapa.mapas.asientos_por_mesa, mapa.mapas.asientos_mesa_principal,  mapa.asientos_ocupados);
+                        eventoTieneMapa = true; 
+                        dibujarMapa(mapa.mapas.num_mesas, mapa.mapas.asientos_por_mesa, mapa.mapas.asientos_mesa_principal, mapa.asientos_ocupados);
                     } else {
+                        eventoTieneMapa = false; 
                         $("#notificationList").html("<p>No se encontró mapa para este evento.</p>");
                     }
                 },
@@ -440,9 +458,11 @@ $(document).ready(function() {
             });
         } else {
             $("#notificationList").empty();
+            eventoTieneMapa = false; 
         }
     });
 });
+
 
 let selectedSeats = null;  
 let selectedMesa = null;   
@@ -535,7 +555,7 @@ function dibujarMapa(numMesas, asientosPorMesa, asientosMesaPrincipal, asientosO
     mesaPrincipalDiv.classList.add('mesa', 'mesa-principal', 'position-relative', 'mx-auto', 'mt-5');
 
     const mesaPrincipalTitulo = document.createElement('h6');
-    mesaPrincipalTitulo.innerText = `Mesa Principal (Mesa 0)`; 
+    mesaPrincipalTitulo.innerText = `MP (M 0)`; 
     mesaPrincipalTitulo.classList.add('text-center', 'mb-3', 'position-absolute', 'top-50', 'start-50', 'translate-middle', 'text-white');
     mesaPrincipalDiv.appendChild(mesaPrincipalTitulo);
 
@@ -599,9 +619,6 @@ function dibujarMapa(numMesas, asientosPorMesa, asientosMesaPrincipal, asientosO
 
 
 
-
-
-
 function registroEvento() {
     if (!$("#nombre_evento").length || !$("#nombre").length || !$("#correo").length || !$("#telefono").length || !$("#tipo_usuario").length) {
         console.error("Un elemento del formulario no se encuentra.");
@@ -619,11 +636,8 @@ function registroEvento() {
     let nombre_empresa = $("#nombre_empresa").val();
     let razon_social = $("#razon-social").val();
     
-    let no_asiento = selectedSeats ? selectedSeats.innerText : '';
+    let no_asiento = selectedSeats ? selectedSeats.innerText : ''; 
     let no_mesa = selectedMesa; 
-
-   
-    let eventoTieneMapa = no_mesa !== undefined && no_mesa !== null;
 
     
     if (!nombre_evento || !nombre || !correo || !telefono || !tipo_usuario || 
@@ -636,7 +650,7 @@ function registroEvento() {
         return;
     }
 
-   
+    
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!re.test(correo)) {
         Swal.fire({
@@ -647,7 +661,6 @@ function registroEvento() {
         return;
     }
 
-   
     let data = {
         evento_id: evento_id, 
         nombre_evento: nombre_evento, 
@@ -663,7 +676,6 @@ function registroEvento() {
         no_mesa: eventoTieneMapa ? no_mesa : null  
     };
 
-    // Enviar datos por AJAX
     $.post("registro_evento.php", data)
         .done(function(result) {
             console.log(result);
@@ -680,7 +692,6 @@ function registroEvento() {
 
             
             var qrData = `Evento: ${nombre_evento}, Nombre: ${nombre}, Usuario: ${tipo_usuario}, Empresa: ${nombre_empresa}, Mesa: ${no_mesa}, Asiento: ${no_asiento}`;
-
             if (gratis !== 1) {
                 qrData += ', Estado: No Pagado';
             }
@@ -689,7 +700,6 @@ function registroEvento() {
                 generateQRCode(qrData);
             }, 1600);
 
-            // Reiniciar los campos del formulario
             $("#nombre_evento").val("");
             $("#nombre").val("");
             $("#tipo_usuario").val("");
@@ -704,30 +714,23 @@ function registroEvento() {
         });
 }
 
-function generateQRCode(code) {
+
+
+function generateQRCode(code, registro_id) {
     var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(code);
 
-  
-    $.post("guardar_qr.php", { qrUrl: qrUrl })
+    $.post("guardar_qr.php", { qrUrl: qrUrl, registro_id: registro_id }) 
         .done(function(response) {
+            console.log(response);
             Swal.fire({
-    title: 'Código QR',
-    html: ` 
-        <div style="text-align:center;">
-            <img src="${qrUrl}" alt="Código QR" style="border-radius: 15px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
-            <p style="font-size: 16px; margin-top: 10px;">Escanea el QR para obtener los detalles del registro</p>
-        </div>
-    `,
-    customClass: {
-        popup: 'qr-popup-class'
-    },
-    width: 350,
-    padding: '20px',
-    showCloseButton: true,
-    showConfirmButton: false,
-    background: '#f5f5f5',
-});
-
+                title: 'Código QR',
+                html: `<div style="text-align:center;">
+                           <img src="${qrUrl}" alt="Código QR" style="border-radius: 15px;">
+                           <p>Escanea el QR para obtener los detalles del registro</p>
+                       </div>`,
+                showCloseButton: true,
+                showConfirmButton: false
+            });
         })
         .fail(function() {
             Swal.fire({
@@ -736,6 +739,41 @@ function generateQRCode(code) {
                 text: 'No se pudo guardar la imagen del código QR en el servidor.',
             });
         });
+}
+
+
+
+function clearMap() {
+    const selectElement = document.getElementById('nombre_evento');
+    const eventoId = selectElement.options[selectElement.selectedIndex].getAttribute('data-id');
+
+    if (!eventoId) {
+        alert('Por favor, selecciona un evento.');
+        return;
+    }
+
+    fetch('limpiarMapa.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ evento_id: eventoId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('El mapa ha sido limpiado correctamente.');
+            $("#notificationList").empty(); 
+
+            
+            location.reload();
+        } else {
+            alert('Error al limpiar el mapa.');
+        }
+    })
+    .catch(error => {
+        console.error('Error al limpiar el mapa:', error);
+    });
 }
 
 

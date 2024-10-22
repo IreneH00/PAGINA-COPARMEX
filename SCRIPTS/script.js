@@ -844,6 +844,9 @@ function editarParticipante(id) {
                         <input type="phone" class="form-control" id="telefono" name="telefono" value="${participante.telefono}">
                     </div>
 
+                    
+                    
+
                 </form>`,
                 showCancelButton: true,
                 confirmButtonText: 'Actualizar',
@@ -910,7 +913,7 @@ function eliminarParticipante(id) {
         },
         function (result) {
             Swal.fire({
-                icon: 'error',
+                icon: 'success',
                 title: 'Eliminado correctamente',
                 text: 'Se ha eliminado de manera correcta',
             }).then(function () {

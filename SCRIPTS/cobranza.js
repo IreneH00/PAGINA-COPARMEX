@@ -17,184 +17,325 @@ $(document).ready(function () {
   //ENVIAR CORREO CON HISTORIAL
   
   $(document).ready(function () {
-$('#enviarhistorial').click(function (event) {
-  event.preventDefault();
+    $('#enviarhistorial').click(function (event) {
+        event.preventDefault();
 
-  var correo = $('#correo').val().trim(); 
+        var correo = $('#correo').val().trim(); 
 
-  if (correo) {
-   
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+        if (correo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            var img = new Image();
+            img.src = 'images/COPARMEX.png';
 
-    doc.setFontSize(22);
-    doc.setTextColor(40, 60, 90);
-    const title = 'HISTORIAL DE COBRANZA';
-    const titleWidth = doc.getTextWidth(title);
-    const xTitle = (doc.internal.pageSize.getWidth() - titleWidth) / 2; 
-    doc.text(title, xTitle, 20);
+            img.onload = function() {
+                const imgWidth = 60; 
+                const imgHeight = 30; 
+                const xImage = (doc.internal.pageSize.getWidth() - imgWidth) / 2; 
+                doc.addImage(img, 'png', xImage, 10, imgWidth, imgHeight);
 
-    doc.setFontSize(12);
-    doc.setTextColor(100, 100, 100);
-    const date = 'Fecha: ' + new Date().toLocaleDateString();
-    const dateWidth = doc.getTextWidth(date);
-    const xDate = (doc.internal.pageSize.getWidth() - dateWidth) / 2; 
-    doc.text(date, xDate, 30);
+                
+                const date = new Date();
+                const day = date.getDate(); 
+                const monthNames = [
+                    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+                ];
+                const month = monthNames[date.getMonth()]; 
+                const year = date.getFullYear(); 
 
-    var headers = [['ID', 'Nombre del Evento', 'Nombre', 'Teléfono', 'Correo', 'Activo', 'Pagado']];
-    
-    var rows = [];
-    
-    //var headers = [['ID', 'Cuota', 'Nombre Comercial', 'Fecha Afiliacion', 'Razon Social', 'Ejecutivo Afiliado']]
-    
+                const formattedDate = `Pachuca de Soto, Hidalgo a ${day} de ${month} de ${year}`;
+                const dateWidth = doc.getTextWidth(formattedDate);
+                const xDate = doc.internal.pageSize.getWidth() - dateWidth - 25; 
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                doc.text(formattedDate, xDate, 50); 
 
-    $('table tbody tr').each(function () {
-      var row = [
-        $(this).find('td').eq(0).text(),
-        $(this).find('td').eq(1).text(),
-        $(this).find('td').eq(2).text(),
-        $(this).find('td').eq(3).text(),
-        $(this).find('td').eq(4).text(),
-        $(this).find('td').eq(5).text(),
-        $(this).find('td').eq(6).text(),
-      ];
-      rows.push(row);
+             
+                const subjectText = "ASUNTO: HISTORIAL COBRANZA";
+                const subjectWidth = doc.getTextWidth(subjectText);
+                const xSubject = doc.internal.pageSize.getWidth() - subjectWidth - 15; 
+                doc.setFont("normal"); 
+                doc.text(subjectText, xSubject, 60); 
+
+                
+                var headersEventos = [['ID', 'Nombre del Evento', 'Nombre', 'Teléfono', 'Correo', 'Precio', 'Pagado']];
+                var rowsEventos = [];
+
+               
+                $('#tablaRegistrosEventos tbody tr').each(function () {
+                    var pagado = $(this).find('td').eq(6).text(); 
+                    if (pagado.toLowerCase() === 'no') { 
+                        var row = [
+                            $(this).find('td').eq(0).text(),
+                            $(this).find('td').eq(1).text(),
+                            $(this).find('td').eq(2).text(),
+                            $(this).find('td').eq(3).text(),
+                            $(this).find('td').eq(4).text(),
+                            $(this).find('td').eq(5).text(),
+                            $(this).find('td').eq(6).text(),
+                        ];
+                        rowsEventos.push(row);
+                    }
+                });
+
+                if (rowsEventos.length === 0) {
+                    alert("No hay registros donde el socio deba.");
+                    return;
+                }
+
+                
+                doc.autoTable({
+                    head: headersEventos,
+                    body: rowsEventos,
+                    startY: 70,
+                    headStyles: {
+                        fillColor: [0, 102, 204],
+                        textColor: [255, 255, 255],
+                        fontSize: 12,
+                        fontStyle: 'bold'
+                    },
+                    bodyStyles: {
+                        fontSize: 10,
+                        textColor: [0, 0, 0]
+                    },
+                    alternateRowStyles: {
+                        fillColor: [240, 240, 240]
+                    },
+                    margin: { top: 70 },
+                });
+
+                
+                doc.setFontSize(12);
+               
+
+               
+                var headersSocios = [['ID', 'Cuota', 'Nombre Comercial', 'Fecha Afiliación', 'Razón Social', 'Ejecutivo Afiliado']];
+                var rowsSocios = [];
+
+                
+                $('#tablaSocios tbody tr').each(function () {
+                    var row = [
+                        $(this).find('td').eq(0).text(),
+                        $(this).find('td').eq(1).text(),
+                        $(this).find('td').eq(2).text(),
+                        $(this).find('td').eq(3).text(),
+                        $(this).find('td').eq(4).text(),
+                        $(this).find('td').eq(5).text(),
+                    ];
+                    rowsSocios.push(row);
+                });
+
+                
+                doc.autoTable({
+                    head: headersSocios,
+                    body: rowsSocios,
+                    startY: doc.autoTable.previous.finalY + 20, 
+                    headStyles: {
+                        fillColor: [0, 102, 204],
+                        textColor: [255, 255, 255],
+                        fontSize: 12,
+                        fontStyle: 'bold'
+                    },
+                    bodyStyles: {
+                        fontSize: 10,
+                        textColor: [0, 0, 0]
+                    },
+                    alternateRowStyles: {
+                        fillColor: [240, 240, 240]
+                    },
+                    margin: { top: 70 },
+                });
+
+                
+                const finalText = 'Fracc. Comercial y de Servicios, lote 2 del lote 6, Col. El Palmar, C.P. 42088, Pachuca, Hidalgo. Teléfonos: 771 7135050 . e-mail: direccion@coparmexhidalgo.org.mx';
+                const finalTextLines = doc.splitTextToSize(finalText, 180);
+                let yText = doc.internal.pageSize.getHeight() - (finalTextLines.length * 6) - 10; 
+                
+                finalTextLines.forEach(line => {
+                    const lineWidth = doc.getTextWidth(line);
+                    const xLine = (doc.internal.pageSize.getWidth() - lineWidth) / 2;
+                    doc.text(line, xLine, yText);
+                    yText += 6;
+                });
+
+                const pdfFileName = 'Historial Cobranza.pdf';
+                doc.save(pdfFileName);
+
+                var subject = encodeURIComponent("HISTORIAL COBRANZA");
+                var body = encodeURIComponent("Adjunta el PDF generado antes de enviar el correo.");
+                var mailtoLink = `mailto:${correo}?subject=${subject}&body=${body}`;
+
+                alert('El PDF ha sido generado. Se abrirá el mail para que puedas adjuntar al correo.');
+                window.location.href = mailtoLink;
+            };
+        } else {
+            alert("Por favor, ingresa un correo electrónico.");
+        }
     });
-
-   
-
-
-
-    doc.autoTable({
-      head: headers,
-      body: rows,
-      startY: 40,
-      headStyles: {
-        fillColor: [0, 102, 204],
-        textColor: [255, 255, 255],
-        fontSize: 12,
-        fontStyle: 'bold'
-      },
-      bodyStyles: {
-        fontSize: 10,
-        textColor: [0, 0, 0]
-      },
-      alternateRowStyles: {
-        fillColor: [240, 240, 240]
-      },
-      margin: { top: 40 },
-    });
-
-   
-    const pdfFileName = 'Historial_cobranza.pdf';
-    doc.save(pdfFileName);
-
-    
-    var subject = encodeURIComponent("Historial de Cobranza");
-    var body = encodeURIComponent("Adjunta el PDF generado antes de enviar el correo.");
-    var mailtoLink = `mailto:${correo}?subject=${subject}&body=${body}`;
-
-   
-    alert('El PDF ha sido generado. Se abrirá el mail para que puedas adjuntar al correo.');
-    window.location.href = mailtoLink;
-
-  } else {
-    alert("Por favor, ingresa un correo electrónico.");
-  }
 });
-});
-
+  
 
 //ENVIAR CORREO CON ESTADO DE CUENTA
 $(document).ready(function () {
-$('#enviarestado').click(function (event) {
-  event.preventDefault();
+    $('#enviarestado').click(function (event) {
+        event.preventDefault();
 
-  var correo = $('#email').val().trim(); 
+        var correo = $('#email').val().trim(); 
 
-  if (correo) {
-   
-   const { jsPDF } = window.jspdf;
-   const doc = new jsPDF();
+        if (correo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            var img = new Image();
+            img.src = 'images/COPARMEX.png';
 
-  
-   doc.setFontSize(22);
-   doc.setTextColor(40, 60, 90);
-   const title = 'ESTADO DE CUENTA'; 
-   const titleWidth = doc.getTextWidth(title);
-   const xTitle = (doc.internal.pageSize.getWidth() - titleWidth) / 2; 
-   doc.text(title, xTitle, 20);
+            img.onload = function() {
+                const imgWidth = 60; 
+                const imgHeight = 30; 
+                const xImage = (doc.internal.pageSize.getWidth() - imgWidth) / 2; 
+                doc.addImage(img, 'png', xImage, 10, imgWidth, imgHeight);
 
-   doc.setFontSize(12);
-   doc.setTextColor(100, 100, 100);
-   const date = 'Fecha: ' + new Date().toLocaleDateString();
-   const dateWidth = doc.getTextWidth(date);
-   const xDate = (doc.internal.pageSize.getWidth() - dateWidth) / 2; 
-   doc.text(date, xDate, 30);
+                
+                const date = new Date();
+                const day = date.getDate(); 
+                const monthNames = [
+                    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+                ];
+                const month = monthNames[date.getMonth()]; 
+                const year = date.getFullYear(); 
 
-   var headers = [['ID', 'Nombre del Evento', 'Nombre', 'Teléfono', 'Correo', 'Activo', 'Pagado']];
-   var rows = [];
+                const formattedDate = `Pachuca de Soto, Hidalgo a ${day} de ${month} de ${year}`;
+                const dateWidth = doc.getTextWidth(formattedDate);
+                const xDate = doc.internal.pageSize.getWidth() - dateWidth - 25; 
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                doc.text(formattedDate, xDate, 50); 
 
-   
-   $('table tbody tr').each(function () {
-     var pagado = $(this).find('td').eq(6).text(); 
-     if (pagado.toLowerCase() === 'no') { 
-       var row = [
-         $(this).find('td').eq(0).text(),
-         $(this).find('td').eq(1).text(),
-         $(this).find('td').eq(2).text(),
-         $(this).find('td').eq(3).text(),
-         $(this).find('td').eq(4).text(),
-         $(this).find('td').eq(5).text(),
-         $(this).find('td').eq(6).text(),
-       ];
-       rows.push(row);
-     }
-   });
+             
+                const subjectText = "ASUNTO: ESTADO DE CUENTA";
+                const subjectWidth = doc.getTextWidth(subjectText);
+                const xSubject = doc.internal.pageSize.getWidth() - subjectWidth - 15; 
+                doc.setFont("normal"); 
+                doc.text(subjectText, xSubject, 60); 
 
-   
-   if (rows.length === 0) {
-     alert("No hay registros donde el socio deba.");
-     return;
-   }
+                
+                var headersEventos = [['ID', 'Nombre del Evento', 'Nombre', 'Teléfono', 'Correo', 'Precio', 'Pagado']];
+                var rowsEventos = [];
 
-   doc.autoTable({
-     head: headers,
-     body: rows,
-     startY: 40,
-     headStyles: {
-       fillColor: [0, 102, 204],
-       textColor: [255, 255, 255],
-       fontSize: 12,
-       fontStyle: 'bold'
-     },
-     bodyStyles: {
-       fontSize: 10,
-       textColor: [0, 0, 0]
-     },
-     alternateRowStyles: {
-       fillColor: [240, 240, 240]
-     },
-     margin: { top: 40 },
-   });
+               
+                $('#tablaRegistrosEventos tbody tr').each(function () {
+                    var pagado = $(this).find('td').eq(6).text(); 
+                    if (pagado.toLowerCase() === 'no') { 
+                        var row = [
+                            $(this).find('td').eq(0).text(),
+                            $(this).find('td').eq(1).text(),
+                            $(this).find('td').eq(2).text(),
+                            $(this).find('td').eq(3).text(),
+                            $(this).find('td').eq(4).text(),
+                            $(this).find('td').eq(5).text(),
+                            $(this).find('td').eq(6).text(),
+                        ];
+                        rowsEventos.push(row);
+                    }
+                });
 
-   const pdfFileName = 'Estado de cuenta.pdf';
-    doc.save(pdfFileName);
+                if (rowsEventos.length === 0) {
+                    alert("No hay registros donde el socio deba.");
+                    return;
+                }
 
-    
-    var subject = encodeURIComponent("ESTADO DE CUENTA");
-    var body = encodeURIComponent("Adjunta el PDF generado antes de enviar el correo.");
-    var mailtoLink = `mailto:${correo}?subject=${subject}&body=${body}`;
+                
+                doc.autoTable({
+                    head: headersEventos,
+                    body: rowsEventos,
+                    startY: 70,
+                    headStyles: {
+                        fillColor: [0, 102, 204],
+                        textColor: [255, 255, 255],
+                        fontSize: 12,
+                        fontStyle: 'bold'
+                    },
+                    bodyStyles: {
+                        fontSize: 10,
+                        textColor: [0, 0, 0]
+                    },
+                    alternateRowStyles: {
+                        fillColor: [240, 240, 240]
+                    },
+                    margin: { top: 70 },
+                });
 
-   
-    alert('El PDF ha sido generado. Se abrirá el mail para que puedas adjuntar al correo.');
-    window.location.href = mailtoLink;
+                
+                doc.setFontSize(12);
+               
 
-  } else {
-    alert("Por favor, ingresa un correo electrónico.");
-  }
+               
+                var headersSocios = [['ID', 'Cuota', 'Nombre Comercial', 'Fecha Afiliación', 'Razón Social', 'Ejecutivo Afiliado']];
+                var rowsSocios = [];
+
+                
+                $('#tablaSocios tbody tr').each(function () {
+                    var row = [
+                        $(this).find('td').eq(0).text(),
+                        $(this).find('td').eq(1).text(),
+                        $(this).find('td').eq(2).text(),
+                        $(this).find('td').eq(3).text(),
+                        $(this).find('td').eq(4).text(),
+                        $(this).find('td').eq(5).text(),
+                    ];
+                    rowsSocios.push(row);
+                });
+
+                
+                doc.autoTable({
+                    head: headersSocios,
+                    body: rowsSocios,
+                    startY: doc.autoTable.previous.finalY + 20, 
+                    headStyles: {
+                        fillColor: [0, 102, 204],
+                        textColor: [255, 255, 255],
+                        fontSize: 12,
+                        fontStyle: 'bold'
+                    },
+                    bodyStyles: {
+                        fontSize: 10,
+                        textColor: [0, 0, 0]
+                    },
+                    alternateRowStyles: {
+                        fillColor: [240, 240, 240]
+                    },
+                    margin: { top: 70 },
+                });
+
+                
+                const finalText = 'Fracc. Comercial y de Servicios, lote 2 del lote 6, Col. El Palmar, C.P. 42088, Pachuca, Hidalgo. Teléfonos: 771 7135050 . e-mail: direccion@coparmexhidalgo.org.mx';
+                const finalTextLines = doc.splitTextToSize(finalText, 180);
+                let yText = doc.internal.pageSize.getHeight() - (finalTextLines.length * 6) - 10; 
+                
+                finalTextLines.forEach(line => {
+                    const lineWidth = doc.getTextWidth(line);
+                    const xLine = (doc.internal.pageSize.getWidth() - lineWidth) / 2;
+                    doc.text(line, xLine, yText);
+                    yText += 6;
+                });
+
+                const pdfFileName = 'Estado de cuenta.pdf';
+                doc.save(pdfFileName);
+
+                var subject = encodeURIComponent("ESTADO DE CUENTA");
+                var body = encodeURIComponent("Adjunta el PDF generado antes de enviar el correo.");
+                var mailtoLink = `mailto:${correo}?subject=${subject}&body=${body}`;
+
+                alert('El PDF ha sido generado. Se abrirá el mail para que puedas adjuntar al correo.');
+                window.location.href = mailtoLink;
+            };
+        } else {
+            alert("Por favor, ingresa un correo electrónico.");
+        }
+    });
 });
-});
+
 
 
 
@@ -250,6 +391,14 @@ $(document).ready(function () {
 
 ////////////////////////////////////////////////////EDITAR REGISTROS DE SOCIOS A EVENTOS /////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
 function editarRegistro(id) {
     $.ajax({
         
@@ -259,7 +408,8 @@ function editarRegistro(id) {
         success: function(response) {
             try {
                 const data = JSON.parse(response);
-                totalAnualidad = data.precio_socio;
+                totalAnualidad = data.precio;
+                
 
                 Swal.fire({
                     title: 'Editar Registro de socios a eventos',
@@ -279,7 +429,7 @@ function editarRegistro(id) {
                                         </tr>
                                     </thead>
                                     <tbody id="historialPagos">
-                                        <!-- HISTORIAL -->
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -299,7 +449,7 @@ function editarRegistro(id) {
                                     <tbody id="abonoSection">
                                         <tr>
                                            
-                                            <td>${data.precio_socio || ''}</td> 
+                                            <td>${data.precio || ''}</td> 
                                             
                                              <td><input type="number" id="porCobrar" class="form-control"></td>
                                             <td><input type="number" id="monto" class="form-control"></td>
@@ -327,7 +477,7 @@ function editarRegistro(id) {
                                     </thead>
                                     <tbody id="condonacionSection">
                                         <tr>
-                                            <td>${data.precio_socio || ''}</td> 
+                                            <td>${data.precio || ''}</td> 
                                             <td><input type="number" id="porCondonar" class="form-control"></td>
                                             <td><input type="date" id="fechaCondonacion" class="form-control"></td>
                                             <td><input type="text" id="tipoCondonacion" class="form-control"></td>
@@ -1211,51 +1361,5 @@ function eliminarTransaccionSocio(id) {
         });
     }
 }
-
-/////////////////////////////////////////////FUNCIONES PARA LA PESTAÑA COBRANZA NO SOCIO//////////////////////////
-
-$(document).ready(function () {
-    // FILTRAR POR SOCIO
-    $('#estado').change(function () {
-        const socioSeleccionado = $(this).val();
-        const paymentStatus = $('#paymentStatus').val(); 
-
-        $.ajax({
-            type: "POST",
-            url: "filtrarRegistrosNSocio.php", 
-            data: { socio_id: socioSeleccionado, payment_status: paymentStatus }, 
-            success: function (response) {
-                const data = JSON.parse(response);
-
-                $('#tablaRegistrosEventos tbody').html(data.eventos);
-                $('#tablaSocios tbody').html(data.socios);
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud AJAX:", status, error); 
-            }
-        });
-    });
-
-    // FILTRAR POR ESTADO DE PAGO
-    $('#paymentStatus').change(function () {
-        const socioSeleccionado = $('#estado').val(); 
-        const paymentStatus = $(this).val(); 
-
-        $.ajax({
-            type: "POST",
-            url: "filtrarRegistrosNSocio.php", 
-            data: { socio_id: socioSeleccionado, payment_status: paymentStatus }, 
-            success: function (response) {
-                const data = JSON.parse(response);
-
-                $('#tablaRegistrosEventos tbody').html(data.eventos);
-                $('#tablaSocios tbody').html(data.socios);
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud AJAX:", status, error); 
-            }
-        });
-    });
-});
 
 

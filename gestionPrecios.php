@@ -62,22 +62,7 @@ if (isset($_POST['socio_id'])) {
             WHERE res.nombre = (SELECT nombreComercial FROM socios WHERE id = $socio_id)) AS total_condonaciones_eventos
     ";
 
-    // (últimos valores de por_cobrar y por_condonar)
-   /* $query_por_cobrar = "
-        SELECT 
-            (SELECT IFNULL(por_cobrar, 0) FROM abonos WHERE socio_id = $socio_id ORDER BY id DESC LIMIT 1) +
-            (SELECT IFNULL(por_cobrar, 0) FROM abonos_eventos WHERE registro_evento_id IN (
-                SELECT res.id FROM registro_eventos_socios res WHERE res.nombre = (
-                    SELECT nombreComercial FROM socios WHERE id = $socio_id
-                )
-            ) ORDER BY id DESC LIMIT 1) +
-            (SELECT IFNULL(por_condonar, 0) FROM condonaciones WHERE socio_id = $socio_id ORDER BY id DESC LIMIT 1) +
-            (SELECT IFNULL(por_condonar, 0) FROM condonaciones_eventos WHERE registro_evento_id IN (
-                SELECT res.id FROM registro_eventos_socios res WHERE res.nombre = (
-                    SELECT nombreComercial FROM socios WHERE id = $socio_id
-                )
-            ) ORDER BY id DESC LIMIT 1) AS total_por_cobrar
-    "; */
+   
 
     $query_por_cobrar = "
     SELECT 
